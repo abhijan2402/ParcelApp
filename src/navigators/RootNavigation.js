@@ -11,6 +11,11 @@ import CreateOrder from '../Screens/Main/CreateOrder';
 import TrackByAwb from '../Screens/Main/TrackByAwb';
 import Wallet from '../Screens/Main/Wallet';
 import Order from '../Screens/Main/Order';
+import ShippingCredits from '../Screens/Main/ShippingCredits';
+import ShippingCalculator from '../Screens/Main/ShippingCalculator';
+import Invoice from '../Screens/Main/Invoice';
+import HelpDesk from '../Screens/Main/HelpDesk';
+import CreateQuery from '../Screens/Main/CreateQuery';
 const Stack = createNativeStackNavigator();
 
 const RootNavigation = () => {
@@ -28,6 +33,12 @@ const RootNavigation = () => {
             <Stack.Screen name="TrackByAwb" component={TrackByAwb} />
             <Stack.Screen name="Wallet" component={Wallet} />
             <Stack.Screen name="Order" component={Order} />
+            <Stack.Screen name="ShippingCredits" component={ShippingCredits} />
+            <Stack.Screen name="ShippingCalculator" component={ShippingCalculator} />
+            <Stack.Screen name="HelpDesk" component={HelpDesk} />
+            <Stack.Screen name="CreateQuery" component={CreateQuery} />
+
+            <Stack.Screen name="Invoice" component={Invoice} />
 
 
 

@@ -1,6 +1,7 @@
 import {
   Animated,
   Image,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,125 +24,130 @@ const Home = ({navigation}) => {
   const features = [
     {
       label: 'Create Order',
-      image: 'https://cdn-icons-png.flaticon.com/128/3144/3144456.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/891/891462.png',
       color: '#E0F7FA',
       navigation: 'CreateOrder',
     },
     {
       label: 'Order List',
-      image: 'https://cdn-icons-png.flaticon.com/128/839/839860.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/9752/9752284.png',
       color: '#E3F2FD',
       navigation: 'Order',
     },
     {
       label: 'Shipping Calculator',
-      image: 'https://cdn-icons-png.flaticon.com/128/2344/2344247.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/548/548353.png',
       color: '#F1F8E9',
+      navigation: 'ShippingCalculator',
     },
     {
       label: 'Shipping Credits',
-      image: 'https://cdn-icons-png.flaticon.com/128/4021/4021708.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/8983/8983163.png',
       color: '#FFF3E0',
+      navigation: 'ShippingCredits',
     },
     {
       label: 'Track By AWB',
-      image: 'https://cdn-icons-png.flaticon.com/128/941/941101.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/3428/3428946.png',
       color: '#FCE4EC',
       navigation: 'TrackByAwb',
     },
     {
       label: 'Wallet Statements',
-      image: 'https://cdn-icons-png.flaticon.com/128/482/482541.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/855/855279.png',
       color: '#F3E5F5',
       navigation: 'Wallet',
     },
     {
       label: 'Remittance',
-      image: 'https://cdn-icons-png.flaticon.com/128/12212/12212167.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/12212/12212166.png',
       color: '#E8F5E9',
     },
     {
       label: 'Helpdesk',
-      image: 'https://cdn-icons-png.flaticon.com/128/1067/1067566.png',
+      image: 'https://cdn-icons-png.flaticon.com/128/4961/4961759.png',
       color: '#FFFDE7',
+      navigation: 'HelpDesk',
     },
   ];
 
   return (
-    <LinearGradient colors={['#c8fcc0', '#e6fffc']} style={styles.container}>
-      {/* <View style={styles.headerContainer}>
-        <Text style={styles.greetingText}>Hello, Akash</Text>
-        <View />
-      </View> */}
-      <View
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}>
-        <View style={{marginLeft: 15}}>
-          <Text style={{fontSize: 15, fontWeight: '400'}}>Hello,</Text>
-          <Text style={{fontSize: 40, fontWeight: '600'}}>Akash</Text>
-        </View>
-        <Image
-          source={require('../../assets/Images/Logo.png')}
+    <SafeAreaView style={{flex: 1}}>
+      <LinearGradient colors={['#c8fcc0', '#e6fffc']} style={styles.container}>
+        <View
           style={{
-            width: 120,
-            height: 70,
-            alignSelf: 'center',
-            borderRadius: 14,
-            marginRight: 15,
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
             marginTop: 10,
-          }}
-        />
-      </View>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={styles.scrollContainer}>
-        {loading ? (
-          <View
+          }}>
+          <View style={{marginLeft: 15}}>
+            <Text style={{fontSize: 15, fontWeight: '400'}}>Hello,</Text>
+            <Text style={{fontSize: 40, fontWeight: '600'}}>Akash</Text>
+          </View>
+          <Image
+            source={require('../../assets/Images/Logo.png')}
             style={{
-              justifyContent: 'center',
-              alignItems: 'center',
-              width: windowWidth / 1.06,
-              height: windowHeight / 1.4,
-            }}>
-            <LottieView
-              ref={animationRef}
-              source={require('../../assets/Lottie/LoaderBar.json')}
-              style={{width: windowWidth, height: windowHeight / 2}}
-            />
-          </View>
-        ) : (
-          <View style={styles.grid}>
-            {features.map((item, index) => (
-              <View
-                key={index}
-                style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}>
-                <TouchableNativeFeedback
-                  onPress={() => {
-                    if (item?.navigation) {
-                      navigation.navigate(item?.navigation);
-                    }
-                  }}
-                  style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}
-                  background={TouchableNativeFeedback.Ripple('#c2ffa3', false)} // Ripple color and bounded effect
-                >
-                  <View style={styles.box}>
-                    <Image
-                      source={{uri: item.image}}
-                      style={styles.iconImage}
-                    />
-                    <Text style={styles.label}>{item.label}</Text>
-                  </View>
-                </TouchableNativeFeedback>
-              </View>
-            ))}
-          </View>
-        )}
-      </ScrollView>
-    </LinearGradient>
+              width: 120,
+              height: 60,
+              alignSelf: 'center',
+              borderRadius: 14,
+              marginRight: 15,
+              marginTop: 10,
+            }}
+          />
+        </View>
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          style={styles.scrollContainer}>
+          {loading ? (
+            <View
+              style={{
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: windowWidth / 1.06,
+                height: windowHeight / 1.4,
+              }}>
+              <LottieView
+                ref={animationRef}
+                source={require('../../assets/Lottie/LoaderBar.json')}
+                style={{width: windowWidth, height: windowHeight / 2}}
+              />
+            </View>
+          ) : (
+            <View style={styles.grid}>
+              {features.map((item, index) => (
+                <View
+                  key={index}
+                  style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}>
+                  <TouchableNativeFeedback
+                    onPress={() => {
+                      if (item?.navigation) {
+                        navigation.navigate(item?.navigation);
+                      }
+                    }}
+                    style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}
+                    background={TouchableNativeFeedback.Ripple(
+                      '#c2ffa3',
+                      false,
+                    )} // Ripple color and bounded effect
+                  >
+                    <View style={styles.box}>
+                      <Image
+                        source={{uri: item.image}}
+                        style={styles.iconImage}
+                      />
+                      <Text style={styles.label}>{item.label}</Text>
+                    </View>
+                  </TouchableNativeFeedback>
+                </View>
+              ))}
+            </View>
+          )}
+        </ScrollView>
+      </LinearGradient>
+    </SafeAreaView>
   );
 };
 

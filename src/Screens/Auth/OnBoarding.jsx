@@ -45,7 +45,7 @@ const OnBoarding = () => {
           position: 'absolute',
           bottom: 0,
           alignSelf: 'center',
-          bottom: 10,
+          bottom: 40,
         }}>
         <CustomButton
           title="Let's get started!"

@@ -17,21 +17,25 @@ const options = [
     imageUri: 'https://cdn-icons-png.flaticon.com/128/4074/4074958.png',
     label: 'Create Orders',
     desc: 'Create a new order',
+    navigation: 'CreateOrder',
   },
   {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/839/839860.png',
     label: 'Initiated Orders Lists',
     desc: 'View your order lists',
+    navigation: 'Order',
   },
   {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/941/941101.png',
     label: 'Track Order',
     desc: 'You can track your order',
+    navigation: 'TrackByAwb',
   },
   {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/2344/2344247.png',
     label: 'Shipping Calculator',
     desc: 'Calculate your shipping rates',
+    navigation: 'ShippingCalculator',
   },
   {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/12212/12212167.png',
@@ -42,21 +46,19 @@ const options = [
     imageUri: 'https://cdn-icons-png.flaticon.com/128/522/522575.png',
     label: 'Invoice',
     desc: 'Download invoice',
+    navigation: 'Invoice',
   },
   {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/482/482541.png',
     label: 'Wallet Statements',
     desc: 'Check your wallet statements',
+    navigation: 'Wallet',
   },
   {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/4396/4396747.png',
     label: 'Undelivered Orders',
     desc: 'Undelivered orders list',
-  },
-  {
-    imageUri: 'https://cdn-icons-png.flaticon.com/128/535/535239.png',
-    label: 'Set lat long(Optional)',
-    desc: 'Set your pickup location lat and Long',
+    navigation: 'Order',
   },
 ];
 
@@ -70,14 +72,16 @@ const Shipping = ({navigation}) => {
             <TouchableNativeFeedback
               background={TouchableNativeFeedback.Ripple('#a5fad2', true)}
               onPress={() => {
-                // navigation.navigate(...) if needed
+                if (item?.navigation) {
+                  navigation.navigate(item?.navigation);
+                }
               }}>
               <View style={styles.item}>
                 <Image
                   source={{uri: item.imageUri}}
                   style={styles.iconImage}
                   resizeMode="contain"
-                  tintColor={'#04b2d1'}
+                  // tintColor={'#04b2d1'}
                 />
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>{item.label}</Text>
@@ -89,7 +93,7 @@ const Shipping = ({navigation}) => {
                   }}
                   style={styles.arrowImage}
                   resizeMode="contain"
-                  tintColor={'#04b2d1'}
+                  // tintColor={'#04b2d1'}
                 />
               </View>
             </TouchableNativeFeedback>
@@ -135,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLOR.primaryBlue,
     fontWeight: '500',
-    color: '#04b2d1',
+    // color: '#04b2d1',
   },
   desc: {
     fontSize: 12,

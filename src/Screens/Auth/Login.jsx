@@ -66,7 +66,7 @@ const Login = ({navigation}) => {
 
   return (
     <ScrollView style={styles.container}>
-      <ScrollView style={{flex: 1}}>
+      <ScrollView style={{flex: 1, marginTop: '10%'}}>
         {/* <LottieView
           ref={animationRef}
           source={require('../../assets/Lottie/Login.json')}
@@ -74,7 +74,12 @@ const Login = ({navigation}) => {
         /> */}
         <Image
           source={require('../../assets/Images/Logo.png')}
-          style={{width: windowWidth / 1.0, height: 200, marginBottom: 50}}
+          style={{
+            width: windowWidth / 1.3,
+            height: 150,
+            marginBottom: 50,
+            alignSelf: 'center',
+          }}
         />
         <View style={{borderTopWidth: 0.5, paddingTop: 15}}>
           <View style={{marginLeft: 25, marginBottom: 10}}>

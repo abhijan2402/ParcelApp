@@ -81,9 +81,9 @@ const BottomNavigation = () => {
       })}>
       <Tab.Screen name="Home" component={Home} />
       {/* <Tab.Screen name="Shipping" component={Feed} /> */}
-      <Tab.Screen name="Notification" component={Notification} />
       <Tab.Screen name="Shipping" component={Shipping} />
       <Tab.Screen name="Profile" component={AccountPage} />
+      <Tab.Screen name="Notification" component={Notification} />
     </Tab.Navigator>
   );
 };
