@@ -49,6 +49,7 @@ const OnBoarding = () => {
         }}>
         <CustomButton
           title="Let's get started!"
+          style={{marginBottom: 15}}
           onPress={() => {
             navigation.navigate('Login');
           }}

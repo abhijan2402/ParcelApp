@@ -70,7 +70,7 @@ const HelpDesk = ({navigation}) => {
           navigation.navigate('CreateQuery');
         }}
         title={'Ask Query'}
-        style={{bottom: 30}}
+        style={{bottom: 40}}
       />
     </View>
   );

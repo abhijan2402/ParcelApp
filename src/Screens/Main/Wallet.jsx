@@ -80,8 +80,9 @@ export default Wallet;
 
 const styles = StyleSheet.create({
   container: {
-    height: windowHeight,
+    // height: windowHeight,
     backgroundColor: COLOR.white,
+    flex: 1,
   },
   list: {
     padding: 16,

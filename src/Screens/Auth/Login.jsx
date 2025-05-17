@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -7,38 +7,32 @@ import {
   TouchableOpacity,
   Dimensions,
   ScrollView,
-  KeyboardAvoidingView,
   Alert,
+  StatusBar,
 } from 'react-native';
 import {COLOR} from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
-import LottieView from 'lottie-react-native';
 import Input from '../../Components/Input';
 import {AuthContext} from '../../Backend/AuthContent';
 import {useApi} from '../../Backend/Api';
 import {windowWidth} from '../../Constants/Dimensions';
 
 const {height} = Dimensions.get('window');
-const {width} = Dimensions.get('window');
+
+const CHECKED_IMAGE = 'https://cdn-icons-png.flaticon.com/128/9918/9918686.png';
+const UNCHECKED_IMAGE =
+  'https://cdn-icons-png.flaticon.com/128/8924/8924271.png';
 
 const Login = ({navigation}) => {
   const {postRequest} = useApi();
 
-  const animationRef = useRef(null);
   const [email, setEmail] = useState(null);
   const [loading, setloading] = useState(false);
   const [password, setpassword] = useState(null);
   const {setUser, setToken} = useContext(AuthContext);
-
-  useEffect(() => {
-    animationRef.current?.play();
-
-    // Or set a specific startFrame and endFrame with:
-    animationRef.current?.play(30, 120);
-  }, []);
+  const [isChecked, setIsChecked] = useState(false);
 
   const loginUser = async (email, password) => {
-    // Basic validation
     if (!email) {
       Alert.alert('Validation Error', 'Email is required');
       return null;
@@ -49,11 +43,7 @@ const Login = ({navigation}) => {
       password,
     });
     if (response?.success) {
-      console.log('INSIDE');
-
       const data = response?.data;
-      console.log(data?.users, 'DAARRRR');
-
       setToken(data?.token);
       setUser(data?.users);
       setloading(false);
@@ -65,66 +55,117 @@ const Login = ({navigation}) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <ScrollView style={{flex: 1, marginTop: '10%'}}>
-        {/* <LottieView
-          ref={animationRef}
-          source={require('../../assets/Lottie/Login.json')}
-          style={styles.image}
-        /> */}
-        <Image
-          source={require('../../assets/Images/Logo.png')}
+    <>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
+      <ScrollView style={styles.container}>
+        <ScrollView
           style={{
-            width: windowWidth / 1.3,
-            height: 150,
-            marginBottom: 50,
-            alignSelf: 'center',
-          }}
-        />
-        <View style={{borderTopWidth: 0.5, paddingTop: 15}}>
-          <View style={{marginLeft: 25, marginBottom: 10}}>
-            <Text
-              style={{fontSize: 22, color: COLOR.royalBlue, fontWeight: '700'}}>
-              Sign In
-            </Text>
-          </View>
-          <Input
-            label="Email"
-            placeholder="Enter your email"
-            value={email}
-            onChangeText={setEmail}
-          />
-          <Input
-            label="Password"
-            placeholder="Enter your password"
-            value={password}
-            onChangeText={setpassword}
-          />
-
-          <CustomButton
-            loading={loading}
-            title="Login"
-            onPress={() => {
-              setToken('123');
-              setUser('Abhishek');
-              // navigation.navigate('BottomNavigation');
-              // loginUser(email, password);
+            flex: 1,
+            marginTop: height * 0.1, // Adjust top margin so content starts below status bar
+            marginBottom: 20,
+            paddingTop: height * 0.03,
+          }}>
+          <Image
+            source={require('../../assets/Images/Logo.png')}
+            style={{
+              width: windowWidth / 1.3,
+              height: 150,
+              marginBottom: 50,
+              alignSelf: 'center',
             }}
-            style={{marginTop: 15}}
           />
-          <Text style={styles.footerText}>
-            Not having account?{' '}
+          <View style={{borderTopWidth: 0.5, paddingTop: 15}}>
+            <View style={{marginLeft: 25, marginBottom: 10}}>
+              <Text
+                style={{
+                  fontSize: 22,
+                  color: COLOR.royalBlue,
+                  fontWeight: '700',
+                }}>
+                Sign In
+              </Text>
+            </View>
+            <Input
+              label="Email"
+              placeholder="Enter your email"
+              value={email}
+              onChangeText={setEmail}
+            />
+            <Input
+              label="Password"
+              placeholder="Enter your password"
+              value={password}
+              onChangeText={setpassword}
+            />
+
+            {/* Terms & Conditions checkbox */}
             <TouchableOpacity
-              style={{marginTop: 8}}
-              onPress={() => {
-                navigation.navigate('SignUp');
-              }}>
-              <Text style={styles.linkText}>Create One</Text>
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginTop: 20,
+                marginBottom: 10,
+                marginHorizontal: 25,
+              }}
+              onPress={() => setIsChecked(!isChecked)}>
+              <Image
+                source={{uri: isChecked ? CHECKED_IMAGE : UNCHECKED_IMAGE}}
+                style={{width: 20, height: 20, marginRight: 10}}
+              />
+              <Text style={{color: '#333', fontSize: 14}}>
+                I accept the{' '}
+                <Text style={{color: COLOR.royalBlue, fontWeight: 'bold'}}>
+                  Terms & Conditions
+                </Text>
+              </Text>
             </TouchableOpacity>
-          </Text>
-        </View>
+
+            <CustomButton
+              loading={loading}
+              title="Login"
+              onPress={() => {
+                if (!isChecked) {
+                  Alert.alert('Please accept Terms & Conditions to continue');
+                  return;
+                }
+
+                setToken('123');
+                setUser('Abhishek');
+                // loginUser(email, password);
+              }}
+              style={{marginTop: 15}}
+            />
+
+            <Text style={styles.footerText}>
+              Not having account?{' '}
+              <TouchableOpacity
+                style={{marginTop: 8}}
+                onPress={() => {
+                  navigation.navigate('SignUp');
+                }}>
+                <Text style={styles.linkText}>Create One</Text>
+              </TouchableOpacity>
+            </Text>
+
+            <TouchableOpacity
+              style={styles.googleButton}
+              onPress={() => Alert.alert('Google Login pressed')}>
+              <Image
+                source={{
+                  uri: 'https://cdn-icons-png.flaticon.com/128/300/300221.png',
+                }}
+                style={styles.googleIcon}
+              />
+              <Text style={styles.googleText}>Continue with Google</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
       </ScrollView>
-    </ScrollView>
+    </>
   );
 };
 
@@ -135,37 +176,6 @@ const styles = StyleSheet.create({
     height: height,
     backgroundColor: COLOR.white,
   },
-  image: {
-    width: width,
-    height: height * 0.5111,
-  },
-  button: {
-    marginTop: 30,
-    backgroundColor: '#007AFF',
-    paddingVertical: 15,
-    paddingHorizontal: 40,
-    borderRadius: 25,
-    width: width / 1.5,
-    alignSelf: 'center',
-    alignItems: 'center',
-  },
-  buttonText: {
-    color: COLOR.white,
-    fontSize: 14,
-    fontWeight: '600',
-    marginBottom: 20,
-  },
-  footerText: {
-    marginTop: 20,
-    fontSize: 14,
-    color: '#333',
-    alignSelf: 'center',
-    alignItems: 'center',
-  },
-  linkText: {
-    color: '#007AFF',
-    fontWeight: 'bold',
-  },
   footerText: {
     marginTop: 20,
     fontSize: 14,
@@ -175,5 +185,26 @@ const styles = StyleSheet.create({
   linkText: {
     color: COLOR.royalBlue,
     fontWeight: 'bold',
+  },
+  googleButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 40,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+    justifyContent: 'center',
+    borderWidth: 1,
+    marginHorizontal: 30,
+    marginBottom: 20,
+  },
+  googleIcon: {
+    width: 24,
+    height: 24,
+    marginRight: 10,
+  },
+  googleText: {
+    fontSize: 16,
+    color: '#333',
   },
 });

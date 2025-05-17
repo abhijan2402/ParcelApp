@@ -15,6 +15,8 @@ const Order = () => {
   const printIcon = 'https://img.icons8.com/ios-filled/50/000000/print.png';
   const shareIcon = 'https://img.icons8.com/ios-filled/50/000000/share.png';
   const trackIcon = 'https://img.icons8.com/ios-filled/50/000000/marker.png';
+  const createIcon = 'https://cdn-icons-png.flaticon.com/128/4074/4074958.png';
+  const dispatch = 'https://cdn-icons-png.flaticon.com/128/18864/18864244.png';
   return (
     <View style={{flex: 1}}>
       <Header showBack title={'Order List'} />
@@ -43,6 +45,18 @@ const Order = () => {
                 <ActionButton
                   icon={trackIcon}
                   label="Track Order"
+                  onPress={() => {}}
+                />
+              </View>
+              <View style={[styles.actionRow, {borderTopWidth: 0}]}>
+                <ActionButton
+                  icon={dispatch}
+                  label="Ship now"
+                  onPress={() => {}}
+                />
+                <ActionButton
+                  icon={createIcon}
+                  label="Create new"
                   onPress={() => {}}
                 />
               </View>

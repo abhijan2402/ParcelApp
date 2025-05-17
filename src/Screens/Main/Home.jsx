@@ -1,8 +1,10 @@
 import {
   Animated,
   Image,
+  Platform,
   SafeAreaView,
   ScrollView,
+  StatusBar,
   StyleSheet,
   Text,
   TouchableNativeFeedback,
@@ -72,79 +74,86 @@ const Home = ({navigation}) => {
   ];
 
   return (
-    <SafeAreaView style={{flex: 1}}>
+    <SafeAreaView style={styles.safeArea}>
+      <StatusBar
+        translucent
+        backgroundColor="transparent"
+        barStyle="dark-content"
+      />
       <LinearGradient colors={['#c8fcc0', '#e6fffc']} style={styles.container}>
-        <View
-          style={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginTop: 10,
-          }}>
-          <View style={{marginLeft: 15}}>
-            <Text style={{fontSize: 15, fontWeight: '400'}}>Hello,</Text>
-            <Text style={{fontSize: 40, fontWeight: '600'}}>Akash</Text>
-          </View>
-          <Image
-            source={require('../../assets/Images/Logo.png')}
+        <ScrollView>
+          <View
             style={{
-              width: 120,
-              height: 60,
-              alignSelf: 'center',
-              borderRadius: 14,
-              marginRight: 15,
+              display: 'flex',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
               marginTop: 10,
-            }}
-          />
-        </View>
-        <ScrollView
-          showsVerticalScrollIndicator={false}
-          style={styles.scrollContainer}>
-          {loading ? (
-            <View
+            }}>
+            <View style={{marginLeft: 15}}>
+              <Text style={{fontSize: 15, fontWeight: '400'}}>Hello,</Text>
+              <Text style={{fontSize: 40, fontWeight: '600'}}>Akash</Text>
+            </View>
+            <Image
+              source={require('../../assets/Images/Logo.png')}
               style={{
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: windowWidth / 1.06,
-                height: windowHeight / 1.4,
-              }}>
-              <LottieView
-                ref={animationRef}
-                source={require('../../assets/Lottie/LoaderBar.json')}
-                style={{width: windowWidth, height: windowHeight / 2}}
-              />
-            </View>
-          ) : (
-            <View style={styles.grid}>
-              {features.map((item, index) => (
-                <View
-                  key={index}
-                  style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}>
-                  <TouchableNativeFeedback
-                    onPress={() => {
-                      if (item?.navigation) {
-                        navigation.navigate(item?.navigation);
-                      }
-                    }}
-                    style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}
-                    background={TouchableNativeFeedback.Ripple(
-                      '#c2ffa3',
-                      false,
-                    )} // Ripple color and bounded effect
-                  >
-                    <View style={styles.box}>
-                      <Image
-                        source={{uri: item.image}}
-                        style={styles.iconImage}
-                      />
-                      <Text style={styles.label}>{item.label}</Text>
-                    </View>
-                  </TouchableNativeFeedback>
-                </View>
-              ))}
-            </View>
-          )}
+                width: 120,
+                height: 60,
+                alignSelf: 'center',
+                borderRadius: 14,
+                marginRight: 15,
+                marginTop: 10,
+              }}
+            />
+          </View>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={styles.scrollContainer}>
+            {loading ? (
+              <View
+                style={{
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  width: windowWidth / 1.06,
+                  height: windowHeight / 1.4,
+                }}>
+                <LottieView
+                  ref={animationRef}
+                  source={require('../../assets/Lottie/LoaderBar.json')}
+                  style={{width: windowWidth, height: windowHeight / 2}}
+                />
+              </View>
+            ) : (
+              <View style={styles.grid}>
+                {features.map((item, index) => (
+                  <View
+                    key={index}
+                    style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}>
+                    <TouchableNativeFeedback
+                      onPress={() => {
+                        if (item?.navigation) {
+                          navigation.navigate(item?.navigation);
+                        }
+                      }}
+                      style={[styles.boxWrapper, {backgroundColor: '#f2fced'}]}
+                      background={TouchableNativeFeedback.Ripple(
+                        '#c2ffa3',
+                        false,
+                      )} // Ripple color and bounded effect
+                    >
+                      <View style={styles.box}>
+                        <Image
+                          source={{uri: item.image}}
+                          style={styles.iconImage}
+                        />
+                        <Text style={styles.label}>{item.label}</Text>
+                      </View>
+                    </TouchableNativeFeedback>
+                  </View>
+                ))}
+              </View>
+            )}
+          </ScrollView>
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>
@@ -156,6 +165,11 @@ export default Home;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+    backgroundColor: '#c8fcc0', // fallback color if gradient doesn't fill status bar area
   },
   headerContainer: {
     marginHorizontal: 10,

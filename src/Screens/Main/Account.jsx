@@ -48,7 +48,11 @@ const AccountPage = ({navigation}) => {
         />
         <MenuItem
           title="Saved Address"
-          // onPress={() => navigation.navigate('EditProfile')}
+          onPress={() => navigation.navigate('SavedAddress')}
+        />
+        <MenuItem
+          title="Bank Details"
+          onPress={() => navigation.navigate('BankDetails')}
         />
         <MenuItem
           title="Terms & Conditions"
@@ -84,7 +88,7 @@ const MenuItem = ({title, onPress}) => (
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
+    flex: 1,
     // paddingVertical: 40,
     // paddingHorizontal: 20,
     backgroundColor: '#fff',

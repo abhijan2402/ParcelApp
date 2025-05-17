@@ -16,6 +16,8 @@ import ShippingCalculator from '../Screens/Main/ShippingCalculator';
 import Invoice from '../Screens/Main/Invoice';
 import HelpDesk from '../Screens/Main/HelpDesk';
 import CreateQuery from '../Screens/Main/CreateQuery';
+import SavedAddress from '../Screens/Main/SavedAddress';
+import BankDetails from '../Screens/Main/BankDetails';
 const Stack = createNativeStackNavigator();
 
 const RootNavigation = () => {
@@ -37,6 +39,8 @@ const RootNavigation = () => {
             <Stack.Screen name="ShippingCalculator" component={ShippingCalculator} />
             <Stack.Screen name="HelpDesk" component={HelpDesk} />
             <Stack.Screen name="CreateQuery" component={CreateQuery} />
+            <Stack.Screen name="SavedAddress" component={SavedAddress} />
+            <Stack.Screen name="BankDetails" component={BankDetails} />
 
             <Stack.Screen name="Invoice" component={Invoice} />
 

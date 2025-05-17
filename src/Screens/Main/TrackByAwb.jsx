@@ -30,8 +30,9 @@ export default TrackByAwb;
 
 const styles = StyleSheet.create({
   container: {
-    height: windowHeight,
+    // height: windowHeight,
     backgroundColor: COLOR.white,
+    flex: 1,
   },
   input: {
     height: 50,
