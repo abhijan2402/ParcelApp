@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -12,13 +12,16 @@ import CustomButton from '../../Components/CustomButton';
 import {windowHeight, windowWidth} from '../../Constants/Dimensions';
 import {COLOR} from '../../Constants/Colors';
 import Header from '../../Components/FeedHeader';
+import {AuthContext} from '../../Backend/AuthContent';
 
 const Profile = ({navigation}) => {
+  const {user} = useContext(AuthContext);
+  const UserDetails = user?.userDetails;
   const [isEditing, setIsEditing] = useState(false);
-  const [name, setName] = useState('John Doe');
+  const [name, setName] = useState(UserDetails?.name);
   const [username, setUsername] = useState('johndoe123');
   const [age, setAge] = useState('28');
-  const [gender, setGender] = useState('Male');
+  const [gender, setGender] = useState(UserDetails?.gender);
   const [bio, setBio] = useState('Developer. Coffee Lover. Always Learning.');
 
   const handleEditPress = () => {
@@ -44,7 +47,7 @@ const Profile = ({navigation}) => {
         <View style={styles.imageWrapper}>
           <Image
             source={{
-              uri: 'https://randomuser.me/api/portraits/men/75.jpg',
+              uri: UserDetails?.image,
             }}
             style={styles.profileImage}
           />
@@ -84,13 +87,13 @@ const Profile = ({navigation}) => {
           onChangeText={setName}
           editable={isEditing}
         />
-        <Input
+        {/* <Input
           label="Username"
           placeholder="Enter your username"
           value={username}
           onChangeText={setUsername}
           editable={isEditing}
-        />
+        /> */}
         <Input
           label="Age"
           placeholder="Enter your age"

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     Text,
@@ -15,22 +15,13 @@ import Header from '../../Components/FeedHeader';
 import { windowHeight, windowWidth } from '../../Constants/Dimensions';
 import { COLOR } from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
-
-const initialBankAccounts = [
-    {
-        id: '1',
-        accountHolder: 'Abhishek Jangid',
-        bankName: 'State Bank of India',
-        branch: 'MI Road, Jaipur',
-        accountNumber: 'XXXX XXXX 2345',
-        ifscCode: 'SBIN0001234',
-    },
-];
+import { useApi } from '../../Backend/Apis';
 
 const BankDetails = () => {
-    const [bankAccounts, setBankAccounts] = useState(initialBankAccounts);
-    const [modalVisible, setModalVisible] = useState(false);
+    const { getRequest, postRequest } = useApi();
 
+    const [bankAccounts, setBankAccounts] = useState([]);
+    const [modalVisible, setModalVisible] = useState(false);
     const [form, setForm] = useState({
         accountHolder: '',
         bankName: '',
@@ -38,6 +29,55 @@ const BankDetails = () => {
         accountNumber: '',
         ifscCode: '',
     });
+
+    useEffect(() => {
+        fetchBankDetails();
+    }, []);
+
+    const fetchBankDetails = async () => {
+        try {
+            const response = await getRequest('/api/bank-details');
+            console.log(response, "RESOOOOOPPPPPP");
+
+            if (response?.success) {
+                setBankAccounts(response.data?.data || []);
+            } else {
+                Alert.alert('Error', response?.error || 'Failed to fetch bank details');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Something went wrong while fetching bank details');
+        }
+    };
+
+
+
+
+
+    const deletebankData = async (id) => {
+
+        try {
+            const response = await getRequest(`/api/delete-bank-details?id=${id}`);
+            console.log(response, "RESOOOOOPPPPPP");
+
+            if (response?.success) {
+                Alert.alert("Bank Account details deleted successfully.")
+                fetchBankDetails()
+            } else {
+                Alert.alert('Error', response?.error || 'Failed to fetch bank details');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Something went wrong while fetching bank details');
+        }
+    };
+
+
+
+
+
+
+
 
     const resetForm = () => {
         setForm({
@@ -49,6 +89,36 @@ const BankDetails = () => {
         });
     };
 
+    const handleAdd = async () => {
+        const { accountHolder, bankName, branch, accountNumber, ifscCode } = form;
+        if (!accountHolder || !bankName || !branch || !accountNumber || !ifscCode) {
+            Alert.alert('Validation Error', 'Please fill in all fields');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('account_holder_name', accountHolder);
+        formData.append('bank_name', bankName);
+        formData.append('branch', branch);
+        formData.append('account_number', accountNumber);
+        formData.append('ifsc_code', ifscCode);
+
+        try {
+            const response = await postRequest('/api/add-bank-details', formData, true);
+            if (response?.success) {
+                Alert.alert('Success', 'Bank account added successfully');
+                resetForm();
+                setModalVisible(false);
+                fetchBankDetails();
+            } else {
+                Alert.alert('Error', response?.error || 'Failed to add bank account');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Something went wrong while adding bank details');
+        }
+    };
+
     const handleDelete = (id) => {
         Alert.alert('Confirm Delete', 'Are you sure you want to delete this bank detail?', [
             { text: 'Cancel', style: 'cancel' },
@@ -56,43 +126,24 @@ const BankDetails = () => {
                 text: 'Delete',
                 style: 'destructive',
                 onPress: () => {
-                    setBankAccounts((prev) => prev.filter((item) => item.id !== id));
+                    deletebankData(id)
                 },
             },
         ]);
     };
 
-    const handleAdd = () => {
-        const { accountHolder, bankName, branch, accountNumber, ifscCode } = form;
-        if (!accountHolder || !bankName || !branch || !accountNumber || !ifscCode) {
-            Alert.alert('Validation Error', 'Please fill in all fields');
-            return;
-        }
-
-        const newEntry = {
-            ...form,
-            id: Date.now().toString(),
-        };
-
-        setBankAccounts((prev) => [...prev, newEntry]);
-        resetForm();
-        setModalVisible(false);
-    };
-
     const renderItem = ({ item }) => (
         <View style={styles.itemContainer}>
             <View style={styles.bankInfo}>
-                <Text style={styles.bankName}>{item.bankName}</Text>
-                <Text style={styles.detailText}>A/C Holder: {item.accountHolder}</Text>
+                <Text style={styles.bankName}>{item.bank_name}</Text>
+                <Text style={styles.detailText}>A/C Holder: {item.account_holder}</Text>
                 <Text style={styles.detailText}>Branch: {item.branch}</Text>
-                <Text style={styles.detailText}>A/C No: {item.accountNumber}</Text>
-                <Text style={styles.detailText}>IFSC: {item.ifscCode}</Text>
+                <Text style={styles.detailText}>A/C No: {item.account_number}</Text>
+                <Text style={styles.detailText}>IFSC: {item.ifsc_code}</Text>
             </View>
             <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
                 <Image
-                    source={{
-                        uri: 'https://img.icons8.com/ios-glyphs/30/fa314a/delete-forever.png',
-                    }}
+                    source={{ uri: 'https://img.icons8.com/ios-glyphs/30/fa314a/delete-forever.png' }}
                     style={styles.deleteIcon}
                 />
             </TouchableOpacity>
@@ -102,28 +153,21 @@ const BankDetails = () => {
     return (
         <View style={styles.Container}>
             <Header title={'Bank Details'} showBack />
+
             <FlatList
                 data={bankAccounts}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.id.toString()}
                 renderItem={renderItem}
                 contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 10 }}
-                ListEmptyComponent={
-                    <Text style={styles.emptyText}>No bank details added yet.</Text>
-                }
+                ListEmptyComponent={<Text style={styles.emptyText}>No bank details added yet.</Text>}
             />
 
-            {/* Add New Bank Button */}
-            {/* <TouchableOpacity
-                style={styles.addButton}
-                onPress={() => setModalVisible(true)}>
-                <Text style={styles.addButtonText}>+ Add New Bank</Text>
-            </TouchableOpacity> */}
             <CustomButton
                 style={{ marginBottom: 50 }}
                 onPress={() => setModalVisible(true)}
-                title={"Add Bank Details"} />
+                title="Add Bank Details"
+            />
 
-            {/* Modal */}
             <Modal visible={modalVisible} animationType="slide" transparent>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
@@ -139,17 +183,19 @@ const BankDetails = () => {
                                     .replace('branch', 'Branch')
                                     .replace('accountNumber', 'Account Number')
                                     .replace('ifscCode', 'IFSC Code')}
-                                placeholderTextColor="#999"  // Add this line
+                                placeholderTextColor="#999"
                                 value={form[field]}
                                 onChangeText={(val) => setForm({ ...form, [field]: val })}
                             />
                         ))}
 
                         <View style={styles.modalButtons}>
-                            <Pressable style={styles.cancelBtn} onPress={() => {
-                                setModalVisible(false);
-                                resetForm();
-                            }}>
+                            <Pressable
+                                style={styles.cancelBtn}
+                                onPress={() => {
+                                    setModalVisible(false);
+                                    resetForm();
+                                }}>
                                 <Text style={styles.btnText}>Cancel</Text>
                             </Pressable>
                             <Pressable style={styles.saveBtn} onPress={handleAdd}>
@@ -167,7 +213,8 @@ export default BankDetails;
 
 const styles = StyleSheet.create({
     Container: {
-        height: windowHeight,
+        flex: 1,
+        // height: windowHeight,
         backgroundColor: COLOR.white,
     },
     itemContainer: {

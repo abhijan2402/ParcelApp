@@ -16,7 +16,7 @@ const AuthStack = () => {
       <Stack.Screen name="OnBoarding" component={OnBoarding} />
       <Stack.Screen name="Login" component={Login} />
       <Stack.Screen name="SignUp" component={SignUp} />
-      <Stack.Screen name="BottomNavigation" component={BottomNavigation} />
+      {/* <Stack.Screen name="BottomNavigation" component={BottomNavigation} /> */}
 
     </Stack.Navigator>
   );

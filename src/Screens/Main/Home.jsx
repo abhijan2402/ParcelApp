@@ -11,17 +11,26 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {COLOR} from '../../Constants/Colors';
 import {windowHeight, windowWidth} from '../../Constants/Dimensions';
 import LottieView from 'lottie-react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import TermsModal from '../../Components/TermsModal';
+import {AuthContext} from '../../Backend/AuthContent';
 
 const Home = ({navigation}) => {
+  const {user, token} = useContext(AuthContext);
   const [modalVisible, setModalVisible] = useState(false);
   const [UserData, setUserData] = useState([]);
   const animationRef = useRef(null);
   const [loading, setloading] = useState(false);
+  const [modalVisible1, setModalVisible1] = useState(false);
+  const UserDetails = user?.userDetails;
+  const handleAccept = () => {
+    setModalVisible1(false);
+    alert('Terms Accepted!');
+  };
 
   const features = [
     {
@@ -72,6 +81,9 @@ const Home = ({navigation}) => {
       navigation: 'HelpDesk',
     },
   ];
+  useEffect(() => {
+    setModalVisible1(true);
+  }, []);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -92,7 +104,9 @@ const Home = ({navigation}) => {
             }}>
             <View style={{marginLeft: 15}}>
               <Text style={{fontSize: 15, fontWeight: '400'}}>Hello,</Text>
-              <Text style={{fontSize: 40, fontWeight: '600'}}>Akash</Text>
+              <Text style={{fontSize: 40, fontWeight: '600'}}>
+                {UserDetails?.name}
+              </Text>
             </View>
             <Image
               source={require('../../assets/Images/Logo.png')}
@@ -154,6 +168,11 @@ const Home = ({navigation}) => {
               </View>
             )}
           </ScrollView>
+          <TermsModal
+            visible={modalVisible1}
+            onAccept={handleAccept}
+            onClose={() => setModalVisible1(false)}
+          />
         </ScrollView>
       </LinearGradient>
     </SafeAreaView>

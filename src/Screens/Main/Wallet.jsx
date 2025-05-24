@@ -1,6 +1,5 @@
 import {StyleSheet, Text, View, FlatList} from 'react-native';
 import React from 'react';
-import {windowHeight} from '../../Constants/Dimensions';
 import {COLOR} from '../../Constants/Colors';
 import Header from '../../Components/FeedHeader';
 
@@ -8,51 +7,64 @@ import Header from '../../Components/FeedHeader';
 const transactions = [
   {
     id: '1',
+    transactionNumber: 'TXN123456',
+    date: '2025-05-17',
     type: 'credit',
     amount: 1500,
     title: 'Refund Received',
     description: 'Your payment of ₹1500 was refunded by Ekart',
+    openingBalance: 5000,
+    closingBalance: 6500,
   },
   {
     id: '2',
+    transactionNumber: 'TXN123457',
+    date: '2025-05-16',
     type: 'debit',
     amount: 500,
     title: 'Payment Sent',
     description: 'Your payment of ₹500 was paid to Ekart',
-  },
-  {
-    id: '3',
-    type: 'credit',
-    amount: 1000,
-    title: 'Cashback Credited',
-    description: 'You received ₹1000 cashback from offer',
-  },
-  {
-    id: '4',
-    type: 'debit',
-    amount: 700,
-    title: 'Subscription Charge',
-    description: 'You paid ₹700 for monthly subscription',
+    openingBalance: 6500,
+    closingBalance: 6000,
   },
 ];
 
-// Icon helper
-const getIcon = type => (type === 'credit' ? '💰' : '💸');
+const getIcon = type => (type === 'credit' ? '⬆️' : '⬇️');
 
 const Wallet = ({navigation}) => {
   const renderItem = ({item}) => (
-    <View style={styles.transactionItem}>
-      <Text style={styles.icon}>{getIcon(item.type)}</Text>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+    <View style={styles.card}>
+      <View style={styles.cardHeader}>
+        <Text style={styles.icon}>{getIcon(item.type)}</Text>
+        <View style={styles.headerText}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.date}>{item.date}</Text>
+        </View>
+        <Text
+          style={[
+            styles.amount,
+            item.type === 'credit' ? styles.credit : styles.debit,
+          ]}>
+          {item.type === 'credit' ? '+' : '-'} ₹{item.amount}
+        </Text>
       </View>
-      <Text
-        style={
-          item.type === 'credit' ? styles.creditAmount : styles.debitAmount
-        }>
-        {item.type === 'credit' ? '+' : '-'} ₹{item.amount}
-      </Text>
+
+      <Text style={styles.description}>{item.description}</Text>
+
+      <View style={styles.metaContainer}>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaLabel}>Transaction No:</Text>
+          <Text style={styles.metaValue}>{item.transactionNumber}</Text>
+        </View>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaLabel}>Opening Balance:</Text>
+          <Text style={styles.metaValue}>₹{item.openingBalance}</Text>
+        </View>
+        <View style={styles.metaRow}>
+          <Text style={styles.metaLabel}>Closing Balance:</Text>
+          <Text style={styles.metaValue}>₹{item.closingBalance}</Text>
+        </View>
+      </View>
     </View>
   );
 
@@ -80,52 +92,81 @@ export default Wallet;
 
 const styles = StyleSheet.create({
   container: {
-    // height: windowHeight,
-    backgroundColor: COLOR.white,
     flex: 1,
+    backgroundColor: COLOR.white,
   },
   list: {
     padding: 16,
   },
-  transactionItem: {
+  card: {
+    backgroundColor: '#f9f9f9',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  cardHeader: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    backgroundColor: COLOR.lightGray || '#f2f2f2',
-    padding: 12,
-    marginBottom: 12,
-    borderRadius: 8,
+    alignItems: 'center',
+    marginBottom: 8,
   },
   icon: {
     fontSize: 24,
     marginRight: 12,
-    marginTop: 4,
   },
-  textContainer: {
+  headerText: {
     flex: 1,
   },
   title: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '600',
     color: COLOR.black || '#000',
   },
-  description: {
+  date: {
     fontSize: 12,
-    color: COLOR.darkGray || '#555',
-    marginTop: 1,
+    color: COLOR.gray || '#888',
   },
-  creditAmount: {
-    fontSize: 14,
-    color: 'green',
-    fontWeight: 'bold',
-  },
-  debitAmount: {
+  amount: {
     fontSize: 16,
-    color: 'red',
     fontWeight: 'bold',
+  },
+  credit: {
+    color: 'green',
+  },
+  debit: {
+    color: 'red',
+  },
+  description: {
+    fontSize: 13,
+    color: COLOR.darkGray || '#555',
+    marginBottom: 10,
+  },
+  metaContainer: {
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
+    paddingTop: 8,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 4,
+  },
+  metaLabel: {
+    fontSize: 12,
+    color: '#555',
+  },
+  metaValue: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#333',
   },
   emptyText: {
     textAlign: 'center',
-    marginTop: 20,
+    marginTop: 40,
+    fontSize: 14,
     color: COLOR.gray || '#777',
   },
 });

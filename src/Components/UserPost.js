@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { View, Text, Image, TouchableOpacity, Dimensions, StyleSheet, Alert } from 'react-native';
 import { COLOR } from '../Constants/Colors';
 import { windowHeight } from '../Constants/Dimensions';
-import { useApi } from '../Backend/Api';
+import { useApi } from '../Backend/Apis';
 import { AuthContext } from '../Backend/AuthContent';
 
 const windowWidth = Dimensions.get('window').width;

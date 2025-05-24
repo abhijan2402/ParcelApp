@@ -13,7 +13,9 @@ import Header from '../../Components/FeedHeader';
 import {AuthContext} from '../../Backend/AuthContent';
 
 const AccountPage = ({navigation}) => {
-  const {setUser, setToken} = useContext(AuthContext);
+  const {user, setUser, setToken} = useContext(AuthContext);
+
+  const UserDetails = user?.userDetails;
 
   const handlePress = item => {
     Alert.alert(item + ' pressed');
@@ -27,21 +29,21 @@ const AccountPage = ({navigation}) => {
 
       <View style={styles.profileContainer}>
         <Image
-          source={{uri: 'https://randomuser.me/api/portraits/men/75.jpg'}} // Replace with user image URL
+          source={{uri: UserDetails?.image}} // Replace with user image URL
           style={styles.profileImage}
         />
-        <Text style={styles.userName}>John Doe</Text>{' '}
+        <Text style={styles.userName}>{UserDetails?.name}</Text>{' '}
         <Text
           style={[
             styles.userName,
             {fontWeight: '400', fontSize: 15, color: COLOR.grey},
           ]}>
-          John@gmail.com
+          {UserDetails?.email}
         </Text>{' '}
       </View>
 
       {/* Menu Section */}
-      <View style={styles.menuContainer}>
+      <ScrollView style={styles.menuContainer}>
         <MenuItem
           title="Edit Profile"
           onPress={() => navigation.navigate('EditProfile')}
@@ -61,17 +63,27 @@ const AccountPage = ({navigation}) => {
           }
         />
         <MenuItem
+          title="Contact Us"
+          onPress={() => navigation.navigate('ContactUs')}
+        />
+
+        <MenuItem
+          title="About us"
+          onPress={() => navigation.navigate('About')}
+        />
+        <MenuItem
           title="Privacy Policy"
           onPress={() => navigation.navigate('Cms', {title: 'Privacy Policy'})}
         />
         <MenuItem
           title="Log Out"
           onPress={() => {
-            setToken(null);
             setUser(null);
+            setToken(null);
+            navigation.navigate('Login');
           }}
         />
-      </View>
+      </ScrollView>
     </ScrollView>
   );
 };
@@ -112,6 +124,7 @@ const styles = StyleSheet.create({
   menuContainer: {
     width: '100%',
     paddingHorizontal: 20,
+    marginBottom: 20,
   },
   menuItem: {
     paddingVertical: 18,

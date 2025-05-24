@@ -14,7 +14,7 @@ import {COLOR} from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
 import Input from '../../Components/Input';
 import {AuthContext} from '../../Backend/AuthContent';
-import {useApi} from '../../Backend/Api';
+import {useApi} from '../../Backend/Apis';
 import {windowWidth} from '../../Constants/Dimensions';
 
 const {height} = Dimensions.get('window');
@@ -38,14 +38,15 @@ const Login = ({navigation}) => {
       return null;
     }
     setloading(true);
-    const response = await postRequest('/auth/login', {
-      email,
-      password,
-    });
+    const formData = new FormData();
+    formData.append('email', email);
+    formData.append('password', password);
+
+    const response = await postRequest('/api/login', formData, true);
     if (response?.success) {
       const data = response?.data;
       setToken(data?.token);
-      setUser(data?.users);
+      setUser(data?.data);
       setloading(false);
     } else {
       setloading(false);
@@ -131,11 +132,9 @@ const Login = ({navigation}) => {
                 if (!isChecked) {
                   Alert.alert('Please accept Terms & Conditions to continue');
                   return;
+                } else {
+                  loginUser(email, password);
                 }
-
-                setToken('123');
-                setUser('Abhishek');
-                // loginUser(email, password);
               }}
               style={{marginTop: 15}}
             />

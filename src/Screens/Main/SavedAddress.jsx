@@ -95,7 +95,8 @@ export default SavedAddress;
 
 const styles = StyleSheet.create({
   Container: {
-    height: windowHeight,
+    // height: windowHeight,
+    flex: 1,
     backgroundColor: COLOR.white,
   },
   itemContainer: {

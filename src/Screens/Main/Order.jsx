@@ -47,8 +47,6 @@ const Order = () => {
                   label="Track Order"
                   onPress={() => {}}
                 />
-              </View>
-              <View style={[styles.actionRow, {borderTopWidth: 0}]}>
                 <ActionButton
                   icon={dispatch}
                   label="Ship now"
@@ -60,6 +58,18 @@ const Order = () => {
                   onPress={() => {}}
                 />
               </View>
+              {/* <View style={[styles.actionRow, {borderTopWidth: 0}]}>
+                <ActionButton
+                  icon={dispatch}
+                  label="Ship now"
+                  onPress={() => {}}
+                />
+                <ActionButton
+                  icon={createIcon}
+                  label="Create new"
+                  onPress={() => {}}
+                />
+              </View> */}
             </LinearGradient>
           ))}
         </ScrollView>
@@ -140,7 +150,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 10,
     elevation: 3,
-    width: '30%',
+    width: '17%',
   },
   actionIcon: {
     width: 24,
@@ -149,7 +159,7 @@ const styles = StyleSheet.create({
     tintColor: '#333',
   },
   actionText: {
-    fontSize: 12,
+    fontSize: 10,
     color: '#333',
     textAlign: 'center',
   },

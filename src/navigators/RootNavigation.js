@@ -18,6 +18,10 @@ import HelpDesk from '../Screens/Main/HelpDesk';
 import CreateQuery from '../Screens/Main/CreateQuery';
 import SavedAddress from '../Screens/Main/SavedAddress';
 import BankDetails from '../Screens/Main/BankDetails';
+import About from '../Screens/Main/About';
+import ContactUs from '../Screens/Main/ContactUs';
+import Kyc from '../Screens/Main/Kyc';
+import WeightDiscrepency from '../Screens/Main/WeightDiscrepency';
 const Stack = createNativeStackNavigator();
 
 const RootNavigation = () => {
@@ -41,6 +45,10 @@ const RootNavigation = () => {
             <Stack.Screen name="CreateQuery" component={CreateQuery} />
             <Stack.Screen name="SavedAddress" component={SavedAddress} />
             <Stack.Screen name="BankDetails" component={BankDetails} />
+            <Stack.Screen name="About" component={About} />
+            <Stack.Screen name="ContactUs" component={ContactUs} />
+            <Stack.Screen name="Kyc" component={Kyc} />
+            <Stack.Screen name="WeightDiscrepency" component={WeightDiscrepency} />
 
             <Stack.Screen name="Invoice" component={Invoice} />
 

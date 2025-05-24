@@ -26,6 +26,17 @@ const OnBoarding = () => {
         style={styles.image}
         resizeMode="cover"
       />
+      <Image
+        source={require('../../assets/Images/Logo.png')}
+        style={{
+          width: windowWidth / 2.5,
+          height: 90,
+          marginBottom: 50,
+          alignSelf: 'center',
+          position: 'absolute',
+          top: 40,
+        }}
+      />
       <View style={{marginTop: '10%'}}>
         <Text
           style={{

@@ -14,19 +14,27 @@ import {SafeAreaView} from 'react-native-safe-area-context'; // install this pac
 import {COLOR} from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
 import Input from '../../Components/Input';
-import {postRequest} from '../../Backend/Api';
 import {windowWidth} from '../../Constants/Dimensions';
+import {useApi} from '../../Backend/Apis';
 
 const {height} = Dimensions.get('window');
 const {width} = Dimensions.get('window');
 
 const SignUp = ({navigation}) => {
+  const {postRequest} = useApi();
+  const [name, setName] = useState(null);
   const [email, setEmail] = useState(null);
   const [password, setpassword] = useState(null);
   const [confirmPassword, setconfirmPassword] = useState(null);
   const [loading, setloading] = useState(false);
 
-  const registerUser = async (email, password, confirmPassword) => {
+  const registerUser = async (name, email, password, confirmPassword) => {
+    console.log('HI');
+
+    if (!name) {
+      Alert.alert('Validation Error', 'Name is required');
+      return null;
+    }
     if (!email) {
       Alert.alert('Validation Error', 'Email is required');
       return null;
@@ -45,19 +53,28 @@ const SignUp = ({navigation}) => {
       );
       return null;
     }
+
     setloading(true);
-    const response = await postRequest('/auth/register', {
-      email,
-      password,
-    });
+
+    // Prepare FormData
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('confirm_password', confirmPassword);
+    formData.append('terms_and_conditions', '1');
+    console.log(formData, 'FOTMDAT');
+
+    const response = await postRequest('/api/signup', formData, true); // Assuming `true` sets content-type to multipart/form-data
+    console.log(response, 'RESPPPP');
+
+    setloading(false);
 
     if (response.success) {
-      setloading(false);
-      Alert.alert('Success', 'Account created successfully');
-      navigation.navigate('Home');
+      Alert.alert('Success', 'Account created successfully, Please login');
+      navigation.navigate('Login');
       return response.data;
     } else {
-      setloading(false);
       Alert.alert('Error', response.error || 'Registration failed');
       return null;
     }
@@ -97,8 +114,8 @@ const SignUp = ({navigation}) => {
             <Input
               label="Name"
               placeholder="Enter your name"
-              value={email}
-              onChangeText={setEmail}
+              value={name}
+              onChangeText={setName}
             />
             <Input
               label="Email"
@@ -123,7 +140,7 @@ const SignUp = ({navigation}) => {
               loading={loading}
               title="Create"
               onPress={() => {
-                registerUser(email, password, confirmPassword);
+                registerUser(name, email, password, confirmPassword);
               }}
               style={{marginTop: 15}}
             />

@@ -49,6 +49,19 @@ const options = [
     navigation: 'Invoice',
   },
   {
+    imageUri: 'https://cdn-icons-png.flaticon.com/128/17442/17442787.png',
+    label: 'KYC',
+    desc: 'Complete your KYC',
+    navigation: 'Kyc',
+  },
+  {
+    imageUri: 'https://cdn-icons-png.flaticon.com/128/8243/8243566.png',
+    label: 'Weight Discrepency',
+    desc: 'Check weight discrepency',
+    navigation: 'WeightDiscrepency',
+  },
+
+  {
     imageUri: 'https://cdn-icons-png.flaticon.com/128/482/482541.png',
     label: 'Wallet Statements',
     desc: 'Check your wallet statements',

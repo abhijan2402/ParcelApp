@@ -14,7 +14,7 @@ import {windowHeight, windowWidth} from '../../Constants/Dimensions';
 import {COLOR} from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
 import ImagePicker from 'react-native-image-crop-picker';
-import {useApi} from '../../Backend/Api';
+import {useApi} from '../../Backend/Apis';
 
 const AddFeed = ({navigation}) => {
   const [description, setDescription] = useState('');

@@ -36,7 +36,6 @@ export default ShippingCredits;
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    // height: windowHeight,
     backgroundColor: COLOR.white,
   },
 });
