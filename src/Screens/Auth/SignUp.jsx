@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   StatusBar,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context'; // install this package if not already
 import {COLOR} from '../../Constants/Colors';
@@ -27,10 +28,7 @@ const SignUp = ({navigation}) => {
   const [password, setpassword] = useState(null);
   const [confirmPassword, setconfirmPassword] = useState(null);
   const [loading, setloading] = useState(false);
-
   const registerUser = async (name, email, password, confirmPassword) => {
-    console.log('HI');
-
     if (!name) {
       Alert.alert('Validation Error', 'Name is required');
       return null;
@@ -39,10 +37,12 @@ const SignUp = ({navigation}) => {
       Alert.alert('Validation Error', 'Email is required');
       return null;
     }
-    if (password.length < 6) {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/;
+
+    if (!passwordRegex.test(password)) {
       Alert.alert(
         'Validation Error',
-        'Password must be at least 6 characters long',
+        'Password must contain at least one uppercase letter, one lowercase letter, and one number',
       );
       return null;
     }
@@ -56,19 +56,27 @@ const SignUp = ({navigation}) => {
 
     setloading(true);
 
-    // Prepare FormData
     const formData = new FormData();
     formData.append('name', name);
     formData.append('email', email);
     formData.append('password', password);
     formData.append('confirm_password', confirmPassword);
     formData.append('terms_and_conditions', '1');
-    console.log(formData, 'FOTMDAT');
 
-    const response = await postRequest('/api/signup', formData, true); // Assuming `true` sets content-type to multipart/form-data
-    console.log(response, 'RESPPPP');
+    const response = await postRequest('/api/signup', formData, true);
+    console.log(response, 'RSSS');
 
     setloading(false);
+
+    // Check if API returned validation errors inside data.errors
+    if (response.data?.errors && Object.keys(response.data.errors).length > 0) {
+      // Flatten all error messages and join with newline for alert display
+      const errorMessages = Object.values(response.data.errors)
+        .flat()
+        .join('\n');
+      Alert.alert('Validation Error', errorMessages);
+      return null;
+    }
 
     if (response.success) {
       Alert.alert('Success', 'Account created successfully, Please login');
@@ -90,72 +98,77 @@ const SignUp = ({navigation}) => {
       <ScrollView
         style={styles.container}
         contentContainerStyle={{flexGrow: 1}}>
-        <ScrollView style={{flex: 1, paddingTop: height * 0.03}}>
-          <Image
-            source={require('../../assets/Images/Logo.png')}
-            style={{
-              width: windowWidth / 1.3,
-              height: 150,
-              marginBottom: 50,
-              alignSelf: 'center',
-            }}
-          />
-          <View style={{borderTopWidth: 0.5, paddingTop: 15}}>
-            <View style={{marginLeft: 25, marginBottom: 10}}>
-              <Text
-                style={{
-                  fontSize: 22,
-                  color: COLOR.royalBlue,
-                  fontWeight: '700',
-                }}>
-                Create New Account
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.container}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
+          <ScrollView style={{flex: 1, paddingTop: height * 0.03}}>
+            <Image
+              source={require('../../assets/Images/Logo.png')}
+              style={{
+                width: windowWidth / 1.3,
+                height: 150,
+                marginBottom: 50,
+                alignSelf: 'center',
+              }}
+            />
+            <View style={{borderTopWidth: 0.5, paddingTop: 15}}>
+              <View style={{marginLeft: 25, marginBottom: 10}}>
+                <Text
+                  style={{
+                    fontSize: 22,
+                    color: COLOR.royalBlue,
+                    fontWeight: '700',
+                  }}>
+                  Create New Account
+                </Text>
+              </View>
+              <Input
+                label="Name"
+                placeholder="Enter your name"
+                value={name}
+                onChangeText={setName}
+              />
+              <Input
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Input
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setpassword}
+              />
+              <Input
+                label="Confirm Password"
+                placeholder="Enter your Confirm Password"
+                value={confirmPassword}
+                onChangeText={setconfirmPassword}
+              />
+
+              <CustomButton
+                loading={loading}
+                title="Create"
+                onPress={() => {
+                  registerUser(name, email, password, confirmPassword);
+                }}
+                style={{marginTop: 15}}
+              />
+              <Text style={styles.footerText}>
+                Already having an account?{' '}
+                <TouchableOpacity
+                  style={{marginTop: 7}}
+                  onPress={() => {
+                    navigation.navigate('Login');
+                  }}>
+                  <Text style={styles.linkText}>Login</Text>
+                </TouchableOpacity>
               </Text>
             </View>
-            <Input
-              label="Name"
-              placeholder="Enter your name"
-              value={name}
-              onChangeText={setName}
-            />
-            <Input
-              label="Email"
-              placeholder="Enter your email"
-              value={email}
-              onChangeText={setEmail}
-            />
-            <Input
-              label="Password"
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setpassword}
-            />
-            <Input
-              label="Confirm Password"
-              placeholder="Enter your Confirm Password"
-              value={confirmPassword}
-              onChangeText={setconfirmPassword}
-            />
-
-            <CustomButton
-              loading={loading}
-              title="Create"
-              onPress={() => {
-                registerUser(name, email, password, confirmPassword);
-              }}
-              style={{marginTop: 15}}
-            />
-            <Text style={styles.footerText}>
-              Already having an account?{' '}
-              <TouchableOpacity
-                style={{marginTop: 7}}
-                onPress={() => {
-                  navigation.navigate('Login');
-                }}>
-                <Text style={styles.linkText}>Login</Text>
-              </TouchableOpacity>
-            </Text>
-          </View>
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </ScrollView>
     </SafeAreaView>
   );

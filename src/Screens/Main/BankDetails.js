@@ -51,9 +51,6 @@ const BankDetails = () => {
     };
 
 
-
-
-
     const deletebankData = async (id) => {
 
         try {
@@ -71,13 +68,6 @@ const BankDetails = () => {
             Alert.alert('Error', 'Something went wrong while fetching bank details');
         }
     };
-
-
-
-
-
-
-
 
     const resetForm = () => {
         setForm({
@@ -132,21 +122,52 @@ const BankDetails = () => {
         ]);
     };
 
+    const handleMarkDefault = async (bankId) => {
+        try {
+            const formData = new FormData();
+            formData.append('bank_id', bankId);
+            const response = await postRequest('/api/mark-default-bank-account', formData, true);
+            console.log(response, "RESPPPP");
+
+            if (response?.success) {
+                Alert.alert('Success', 'Bank account default added successfully');
+                fetchBankDetails()
+            } else {
+                Alert.alert('Error', response?.error || 'Failed to add bank account');
+            }
+        } catch (error) {
+            console.error(error);
+            Alert.alert('Error', 'Something went wrong while adding bank details');
+        }
+    };
+
+
     const renderItem = ({ item }) => (
         <View style={styles.itemContainer}>
             <View style={styles.bankInfo}>
                 <Text style={styles.bankName}>{item.bank_name}</Text>
-                <Text style={styles.detailText}>A/C Holder: {item.account_holder}</Text>
+                <Text style={styles.detailText}>A/C Holder: {item.account_holder_name}</Text>
                 <Text style={styles.detailText}>Branch: {item.branch}</Text>
                 <Text style={styles.detailText}>A/C No: {item.account_number}</Text>
                 <Text style={styles.detailText}>IFSC: {item.ifsc_code}</Text>
             </View>
-            <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
-                <Image
-                    source={{ uri: 'https://img.icons8.com/ios-glyphs/30/fa314a/delete-forever.png' }}
-                    style={styles.deleteIcon}
-                />
-            </TouchableOpacity>
+
+            <View style={styles.actionRow}>
+                <TouchableOpacity
+                    onPress={() => handleMarkDefault(item.id)}
+                    style={[styles.defaultButton, item.is_default && styles.defaultButtonActive]}>
+                    <Text style={[styles.defaultText, item.is_default && styles.defaultTextActive]}>
+                        {item.is_default ? 'Default Selected' : 'Mark as Default'}
+                    </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={() => handleDelete(item.id)} style={styles.deleteButton}>
+                    <Image
+                        source={{ uri: 'https://img.icons8.com/ios-glyphs/30/fa314a/delete-forever.png' }}
+                        style={styles.deleteIcon}
+                    />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 
@@ -172,7 +193,6 @@ const BankDetails = () => {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                         <Text style={styles.modalTitle}>Add Bank Details</Text>
-
                         {['accountHolder', 'bankName', 'branch', 'accountNumber', 'ifscCode'].map((field) => (
                             <TextInput
                                 key={field}
@@ -186,6 +206,7 @@ const BankDetails = () => {
                                 placeholderTextColor="#999"
                                 value={form[field]}
                                 onChangeText={(val) => setForm({ ...form, [field]: val })}
+                                keyboardType={field === 'accountNumber' ? 'numeric' : 'default'}
                             />
                         ))}
 
@@ -218,7 +239,7 @@ const styles = StyleSheet.create({
         backgroundColor: COLOR.white,
     },
     itemContainer: {
-        flexDirection: 'row',
+        // flexDirection: 'row',
         alignItems: 'flex-start',
         backgroundColor: '#f8f8f8',
         padding: 15,
@@ -313,5 +334,46 @@ const styles = StyleSheet.create({
     btnText: {
         color: COLOR.white,
         fontWeight: 'bold',
+    },
+    actionRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        width: windowWidth / 1.255,
+        marginTop: 10,
+    },
+
+    defaultButton: {
+        borderWidth: 1,
+        borderColor: '#007bff',
+        borderRadius: 5,
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+        backgroundColor: '#fff',
+    },
+
+    defaultButtonActive: {
+        backgroundColor: '#d1e7dd',
+        borderColor: '#198754',
+    },
+
+    defaultText: {
+        color: '#007bff',
+        fontSize: 14,
+    },
+
+    defaultTextActive: {
+        color: '#198754',
+        fontWeight: 'bold',
+    },
+
+    deleteButton: {
+        padding: 6,
+        marginLeft: 10,
+    },
+
+    deleteIcon: {
+        width: 24,
+        height: 24,
     },
 });

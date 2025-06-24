@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -6,72 +6,113 @@ import {
   ScrollView,
   TouchableOpacity,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {windowHeight, windowWidth} from '../../Constants/Dimensions';
 import Header from '../../Components/FeedHeader';
+import {useApi} from '../../Backend/Apis';
+import {COLOR} from '../../Constants/Colors';
 
-const Order = () => {
+const Order = ({navigation}) => {
+  const {getRequest} = useApi();
+
   const printIcon = 'https://img.icons8.com/ios-filled/50/000000/print.png';
   const shareIcon = 'https://img.icons8.com/ios-filled/50/000000/share.png';
   const trackIcon = 'https://img.icons8.com/ios-filled/50/000000/marker.png';
   const createIcon = 'https://cdn-icons-png.flaticon.com/128/4074/4074958.png';
   const dispatch = 'https://cdn-icons-png.flaticon.com/128/18864/18864244.png';
+
+  const [orderList, setOrderList] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  const getOrderList = async () => {
+    setLoading(true);
+    try {
+      const response = await getRequest('/api/order-list/', true);
+      console.log('Order List Response:', response?.data?.data);
+
+      if (response?.success) {
+        setOrderList(response?.data?.data); // Adjust based on your actual API response
+      } else {
+        Alert.alert('Error', response?.error || 'Failed to fetch orders');
+      }
+    } catch (error) {
+      console.error('Order List Fetch Error:', error);
+      Alert.alert('Error', 'Network error while fetching orders');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getOrderList();
+  }, []);
   return (
     <View style={{flex: 1}}>
       <Header showBack title={'Order List'} />
       <LinearGradient colors={['#c8fcc0', '#e6fffc']} style={styles.LinearBox}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
-          {[1, 2, 3]?.map((i, index) => (
-            <LinearGradient colors={['#f2fce3', '#ebfffb']} style={styles.card}>
-              <InfoRow label="Order Date" value="17 May 2025" />
-              <InfoRow label="Order ID" value="MY_BHB_466546484" />
-              <InfoRow label="Product Details" value="Product sdhbsdb cxhb" />
-              <InfoRow label="Payment Method" value="Prepaid" />
-              <InfoRow label="Amount Paid" value="Rs 2000" />
-              <InfoRow label="Pickup Location" value="ABC" />
-              <InfoRow label="Order Status" value="Shipped" status />
-              <View style={styles.actionRow}>
-                <ActionButton
-                  icon={printIcon}
-                  label="Print Label"
-                  onPress={() => {}}
+          {loading ? (
+            <ActivityIndicator size={22} color={COLOR.blue} />
+          ) : orderList.length > 0 ? (
+            orderList.map((order, index) => (
+              <LinearGradient
+                key={order.id?.toString() || index.toString()}
+                colors={['#f2fce3', '#ebfffb']}
+                style={styles.card}>
+                <InfoRow
+                  label="Order Date"
+                  value={new Date(order.created_at).toDateString()}
                 />
-                <ActionButton
-                  icon={shareIcon}
-                  label="Share Label"
-                  onPress={() => {}}
+                <InfoRow label="Order ID" value={`ORDER_${order.id}`} />
+                <InfoRow label="Product Details" value={order.product_name} />
+                <InfoRow label="Payment Method" value={order.payment_method} />
+                <InfoRow label="Amount Paid" value={`Rs ${order.price}`} />
+                <InfoRow
+                  label="Pickup Location"
+                  value={order.pickup_location || 'N/A'}
                 />
-                <ActionButton
-                  icon={trackIcon}
-                  label="Track Order"
-                  onPress={() => {}}
-                />
-                <ActionButton
-                  icon={dispatch}
-                  label="Ship now"
-                  onPress={() => {}}
-                />
-                <ActionButton
-                  icon={createIcon}
-                  label="Create new"
-                  onPress={() => {}}
-                />
-              </View>
-              {/* <View style={[styles.actionRow, {borderTopWidth: 0}]}>
-                <ActionButton
-                  icon={dispatch}
-                  label="Ship now"
-                  onPress={() => {}}
-                />
-                <ActionButton
-                  icon={createIcon}
-                  label="Create new"
-                  onPress={() => {}}
-                />
-              </View> */}
-            </LinearGradient>
-          ))}
+                <InfoRow label="Order Status" value="Shipped" status />
+
+                <View style={styles.actionRow}>
+                  <ActionButton
+                    icon={printIcon}
+                    label="Print Label"
+                    onPress={() => {}}
+                  />
+                  <ActionButton
+                    icon={shareIcon}
+                    label="Share Label"
+                    onPress={() => {}}
+                  />
+                  <ActionButton
+                    icon={trackIcon}
+                    label="Track Order"
+                    onPress={() => {}}
+                  />
+                  <ActionButton
+                    icon={dispatch}
+                    label="Ship now"
+                    onPress={() => {}}
+                  />
+                  <ActionButton
+                    icon={createIcon}
+                    label="Create new"
+                    onPress={() => {
+                      navigation.navigate('CreateOrder');
+                    }}
+                  />
+                </View>
+              </LinearGradient>
+            ))
+          ) : (
+            <View style={{alignItems: 'center', marginTop: 50}}>
+              <Text style={{fontSize: 16, color: 'gray'}}>
+                No orders available.
+              </Text>
+            </View>
+          )}
         </ScrollView>
       </LinearGradient>
     </View>

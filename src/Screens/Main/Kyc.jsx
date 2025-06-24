@@ -7,13 +7,18 @@ import {
   Image,
   ScrollView,
   Animated,
+  Alert,
+  Platform,
 } from 'react-native';
 import Header from '../../Components/FeedHeader';
 import CustomButton from '../../Components/CustomButton';
 import {COLOR} from '../../Constants/Colors';
-// import {launchImageLibrary} from 'react-native-image-picker';
+import {useApi} from '../../Backend/Apis';
+import ImagePicker from 'react-native-image-crop-picker';
 
-const Kyc = () => {
+const Kyc = ({navigation}) => {
+  const {postRequest} = useApi();
+
   const [selectedDoc, setSelectedDoc] = useState(null);
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [frontImage, setFrontImage] = useState(null);
@@ -37,20 +42,79 @@ const Kyc = () => {
   };
 
   const selectImage = async type => {
-    const result = await launchImageLibrary({mediaType: 'photo'});
-    if (result.assets && result.assets.length > 0) {
-      type === 'front'
-        ? setFrontImage(result.assets[0].uri)
-        : setBackImage(result.assets[0].uri);
+    try {
+      const image = await ImagePicker.openPicker({
+        width: 800,
+        height: 800,
+        cropping: true,
+        compressImageQuality: 0.8,
+        mediaType: 'photo',
+      });
+
+      const uri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+
+      if (type === 'front') {
+        setFrontImage(uri);
+      } else {
+        setBackImage(uri);
+      }
+    } catch (error) {
+      if (error?.code !== 'E_PICKER_CANCELLED') {
+        Alert.alert('Error', 'Failed to select image');
+        console.error(error);
+      }
+    }
+  };
+
+  const PostDocuments = async () => {
+    if (!selectedDoc || !frontImage || !backImage) {
+      Alert.alert(
+        'Missing Fields',
+        'Please select document type and upload both images.',
+      );
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('document_type', selectedDoc);
+    formData.append('document_front', {
+      uri: frontImage,
+      name: 'front.jpg',
+      type: 'image/jpeg',
+    });
+    formData.append('document_back', {
+      uri: backImage,
+      name: 'back.jpg',
+      type: 'image/jpeg',
+    });
+
+    try {
+      const response = await postRequest(
+        '/api/upload-documents',
+        formData,
+        true,
+      );
+      console.log(response, 'Upload Response');
+
+      if (response?.success) {
+        Alert.alert(
+          'Success',
+          'Documents uploaded successfully and under verification!',
+        );
+        navigation.goBack();
+      } else {
+        Alert.alert('Error', response?.error || 'Upload failed');
+      }
+    } catch (error) {
+      console.log(error, 'ERRORRR');
+      Alert.alert('Error', 'Something went wrong while uploading documents');
     }
   };
 
   return (
     <View style={styles.wrapper}>
-      {/* Header (Non-Scrollable) */}
       <Header title={'KYC Verification'} showBack />
 
-      {/* Scrollable Content */}
       <ScrollView
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}>
@@ -69,7 +133,6 @@ const Kyc = () => {
             />
           </TouchableOpacity>
 
-          {/* Dropdown Options */}
           <Animated.View
             style={[styles.dropdownList, {height: dropdownHeight}]}>
             {dropdownVisible &&
@@ -87,7 +150,7 @@ const Kyc = () => {
               ))}
           </Animated.View>
 
-          {/* Image Uploads */}
+          {/* Upload Front Image */}
           <Text style={styles.label}>Upload Front Image</Text>
           <TouchableOpacity
             style={styles.imageUpload}
@@ -107,6 +170,7 @@ const Kyc = () => {
             )}
           </TouchableOpacity>
 
+          {/* Upload Back Image */}
           <Text style={styles.label}>Upload Back Image</Text>
           <TouchableOpacity
             style={styles.imageUpload}
@@ -126,7 +190,12 @@ const Kyc = () => {
             )}
           </TouchableOpacity>
 
-          <CustomButton title={'Submit KYC'} style={{marginTop: 20}} />
+          {/* Submit Button */}
+          <CustomButton
+            title={'Submit KYC'}
+            style={{marginTop: 20}}
+            onPress={PostDocuments}
+          />
         </View>
       </ScrollView>
     </View>

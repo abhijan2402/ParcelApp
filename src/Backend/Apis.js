@@ -14,7 +14,8 @@ export const useApi = () => {
             Authorization: `Bearer ${token}`,
             ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
         };
-        console.log(headers, "BHGUGHGUJKG");
+
+        console.log(`${BASE_URL}${endpoint}`, data, "DATATT");
 
         try {
             const response = await fetch(`${BASE_URL}${endpoint}`, {

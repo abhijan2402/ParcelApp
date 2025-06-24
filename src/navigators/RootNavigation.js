@@ -22,6 +22,7 @@ import About from '../Screens/Main/About';
 import ContactUs from '../Screens/Main/ContactUs';
 import Kyc from '../Screens/Main/Kyc';
 import WeightDiscrepency from '../Screens/Main/WeightDiscrepency';
+import ShippingDetails from '../Screens/Main/ShippingDetails';
 const Stack = createNativeStackNavigator();
 
 const RootNavigation = () => {
@@ -49,8 +50,11 @@ const RootNavigation = () => {
             <Stack.Screen name="ContactUs" component={ContactUs} />
             <Stack.Screen name="Kyc" component={Kyc} />
             <Stack.Screen name="WeightDiscrepency" component={WeightDiscrepency} />
-
             <Stack.Screen name="Invoice" component={Invoice} />
+            <Stack.Screen name="ShippingDetails" component={ShippingDetails} />
+
+
+
 
 
 

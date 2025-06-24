@@ -9,6 +9,7 @@ import {
   ScrollView,
   Alert,
   StatusBar,
+  KeyboardAvoidingView,
 } from 'react-native';
 import {COLOR} from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
@@ -43,12 +44,16 @@ const Login = ({navigation}) => {
     formData.append('password', password);
 
     const response = await postRequest('/api/login', formData, true);
+    console.log(response, 'RESPPPP');
+
     if (response?.success) {
       const data = response?.data;
       setToken(data?.token);
       setUser(data?.data);
       setloading(false);
     } else {
+      console.log(response, 'RESPPPP');
+
       setloading(false);
       Alert.alert('Error', response.error || 'Login failed');
       return null;
@@ -62,12 +67,15 @@ const Login = ({navigation}) => {
         backgroundColor="transparent"
         barStyle="dark-content"
       />
-      <ScrollView style={styles.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.container}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 60 : 0}>
         <ScrollView
           style={{
             flex: 1,
             marginTop: height * 0.1, // Adjust top margin so content starts below status bar
-            marginBottom: 20,
+            paddingBottom: 80,
             paddingTop: height * 0.03,
           }}>
           <Image
@@ -163,7 +171,7 @@ const Login = ({navigation}) => {
             </TouchableOpacity>
           </View>
         </ScrollView>
-      </ScrollView>
+      </KeyboardAvoidingView>
     </>
   );
 };

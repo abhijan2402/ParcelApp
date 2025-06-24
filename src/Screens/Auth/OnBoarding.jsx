@@ -40,13 +40,15 @@ const OnBoarding = () => {
       <View style={{marginTop: '10%'}}>
         <Text
           style={{
-            fontSize: 15,
+            fontSize: 18,
             color: COLOR.black,
             width: windowWidth / 1.3,
             textAlign: 'center',
             alignSelf: 'center',
             fontWeight: '500',
             marginBottom: 25,
+            position: 'absolute',
+            bottom: 25,
           }}>
           Deliver your love to friends and loved ones....
         </Text>
@@ -79,7 +81,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: width,
-    height: height * 0.7,
+    height: height * 0.78,
   },
   button: {
     marginTop: 30,
