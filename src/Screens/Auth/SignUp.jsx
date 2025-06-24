@@ -63,7 +63,7 @@ const SignUp = ({navigation}) => {
     formData.append('confirm_password', confirmPassword);
     formData.append('terms_and_conditions', '1');
 
-    const response = await postRequest('/api/signup', formData, true);
+    const response = await postRequest('/signup', formData, true);
     console.log(response, 'RSSS');
 
     setloading(false);
