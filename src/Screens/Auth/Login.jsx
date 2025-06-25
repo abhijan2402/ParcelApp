@@ -43,7 +43,7 @@ const Login = ({navigation}) => {
     formData.append('email', email);
     formData.append('password', password);
 
-    const response = await postRequest('/login', formData, true);
+    const response = await postRequest('/api/login', formData, true);
     console.log(response, 'RESPPPP');
 
     if (response?.success) {

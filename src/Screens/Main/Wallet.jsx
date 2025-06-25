@@ -176,7 +176,7 @@ const Wallet = ({navigation}) => {
     formData.append('razorpay_signature', data.razorpay_signature);
 
     // Step 1: Verify Razorpay payment on your server
-    const verifyRes = await postRequest('/verify-payment', formData, true);
+    const verifyRes = await postRequest('/api/verify-payment', formData, true);
     console.log('Verify Response:', verifyRes);
 
     if (!verifyRes.success) {
@@ -191,7 +191,7 @@ const Wallet = ({navigation}) => {
     // Step 2: Add money after verification
     const addMoneyForm = new FormData();
     addMoneyForm.append('amount', String(amount));
-    const addMoneyRes = await postRequest('/add-money', addMoneyForm, true);
+    const addMoneyRes = await postRequest('/api/add-money', addMoneyForm, true);
     console.log('Add Money Response:', addMoneyRes);
 
     if (addMoneyRes.success) {

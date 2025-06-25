@@ -2,7 +2,7 @@
 import {useContext} from 'react';
 import {AuthContext} from './AuthContent';
 
-const BASE_URL = 'https://dearexpress.com/public/api';
+const BASE_URL = 'https://dearexpress.com/public';
 
 export const useApi = () => {
   const {token} = useContext(AuthContext);
