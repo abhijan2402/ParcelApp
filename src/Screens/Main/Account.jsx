@@ -15,7 +15,7 @@ import {AuthContext} from '../../Backend/AuthContent';
 const AccountPage = ({navigation}) => {
   const {user, setUser, setToken} = useContext(AuthContext);
 
-  const UserDetails = user?.userDetails;
+  const UserDetails = user?.userDetails || user;
 
   const handlePress = item => {
     Alert.alert(item + ' pressed');

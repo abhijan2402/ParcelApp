@@ -46,9 +46,23 @@ const CreateOrder = ({navigation}) => {
   const [addresses, setAddresses] = useState([]);
   const [addressOpen, setAddressOpen] = useState(false);
   const [selectedAddress, setSelectedAddress] = useState(null);
+  const [weightCustom, setweightCustom] = useState(null);
+  const [weightOptionsOpen, setWeightOptionsOpen] = useState(false);
+  const [weightOptions, setWeightOptions] = useState([
+    {label: 'Upto 0.5kg', value: '0.5'},
+    {label: 'Upto 1kg', value: '1'},
+    {label: 'Upto 1.5kg', value: '1.5'},
+    {label: 'Upto 2kg', value: '2'},
+    {label: 'Custom Weight', value: 'custom'},
+  ]);
+
+  const [paymentOptionsOpen, setPaymentOptionsOpen] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState([
+    {label: 'Prepaid', value: 'prepaid'},
+    {label: 'Cash on Delivery (COD)', value: 'cod'},
+  ]);
 
   const createOrderFunc = async () => {
-    // Basic field validations
     if (!pickupLocation.trim())
       return Alert.alert('Validation Error', 'Pickup location is required');
     if (!firstName.trim())
@@ -72,7 +86,6 @@ const CreateOrder = ({navigation}) => {
       return Alert.alert('Validation Error', 'Customer address is required');
     if (!landmark.trim())
       return Alert.alert('Validation Error', 'Landmark is required');
-
     if (!productName.trim())
       return Alert.alert('Validation Error', 'Product name is required');
     if (!sku.trim()) return Alert.alert('Validation Error', 'SKU is required');
@@ -92,7 +105,6 @@ const CreateOrder = ({navigation}) => {
       return Alert.alert('Validation Error', 'Payment method is required');
 
     const formData = new FormData();
-
     formData.append('pickup_location', pickupLocation);
     formData.append('customer_first_name', firstName);
     formData.append('customer_last_name', lastName);
@@ -103,7 +115,6 @@ const CreateOrder = ({navigation}) => {
     formData.append('state', state);
     formData.append('customer_address', address);
     formData.append('landmark', landmark);
-
     formData.append('product_name', productName);
     formData.append('sku', sku);
     formData.append('qty', quantity);
@@ -113,9 +124,12 @@ const CreateOrder = ({navigation}) => {
     formData.append('breadth', breadth);
     formData.append('height', height);
     formData.append('payment_method', paymentMethod);
+    console.log(formData, 'FORMMMMM');
 
     try {
       const response = await postRequest('/api/create-order', formData, true);
+      console.log(response, 'RESPPPP');
+
       if (response?.success) {
         Alert.alert('Success', 'Order created successfully');
         navigation.goBack();
@@ -137,22 +151,39 @@ const CreateOrder = ({navigation}) => {
       const response = await getRequest('/api/shipping-address-list', true);
       if (response?.success) {
         const data = response?.data?.data || [];
-
-        // Format for dropdown
         const formatted = data.map(item => ({
           label: `${item.name} - ${item.address}, ${item.town}, ${item.city}, ${item.country}`,
-          value: `${item.name} - ${item.address}, ${item.town}, ${item.city}, ${item.country}`, // Use ID as value
+          value: `${item.name} - ${item.address}, ${item.town}, ${item.city}, ${item.country}`,
         }));
-
-        setAddresses(formatted); // for dropdown list
+        setAddresses(formatted);
       } else {
         Alert.alert('Error', response?.error || 'Failed to fetch addresses');
       }
     } catch (error) {
       console.error(error);
       Alert.alert('Error', 'Something went wrong while fetching addresses');
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const fetchCityStateByPincode = async pincode => {
+    try {
+      const response = await fetch(
+        `https://api.postalpincode.in/pincode/${pincode}`,
+      );
+      const data = await response.json();
+      if (data[0].Status === 'Success' && data[0].PostOffice.length > 0) {
+        const postOffice = data[0].PostOffice[0];
+        setCity(postOffice.District);
+        setState(postOffice.State);
+      } else {
+        setCity('');
+        setState('');
+        console.warn('Invalid pincode or no data found');
+      }
+    } catch (error) {
+      console.error('Error fetching city/state:', error);
+      setCity('');
+      setState('');
     }
   };
 
@@ -181,139 +212,190 @@ const CreateOrder = ({navigation}) => {
             <DropDownPicker
               open={addressOpen}
               value={pickupLocation}
-              items={addresses} // this is what setAddresses() sets
+              items={addresses}
               setOpen={setAddressOpen}
               setValue={setPickupLocation}
               setItems={setAddresses}
-              placeholder="Select Shipping Address"
+              placeholder="Select Shipping Address*"
               style={{width: windowWidth / 1.2, marginLeft: 10}}
+              dropDownContainerStyle={{
+                width: windowWidth / 1.2,
+                marginLeft: 10,
+                borderColor: '#ccc',
+                borderRadius: 10,
+              }}
+              listItemContainerStyle={{
+                paddingVertical: 0,
+                borderBottomWidth: 0.8,
+                borderBottomColor: '#eee',
+                marginBottom: 10,
+              }}
+              listItemLabelStyle={{
+                fontSize: 14,
+                color: '#333',
+                fontWeight: '500',
+              }}
+              selectedItemLabelStyle={{
+                color: '#2563EB',
+                fontWeight: '700',
+              }}
+              selectedItemContainerStyle={{
+                backgroundColor: '#f0f4ff',
+              }}
             />
-            {/* <Input
-              style={styles.input}
-              placeholder="Pickup Location"
-              value={pickupLocation}
-              onChangeText={setPickupLocation}
-            /> */}
             <Text style={styles.MainTitle}>Delivery Details</Text>
-
             <Input
               style={styles.input}
-              placeholder="Customer First Name"
+              placeholder="Customer First Name*"
               value={firstName}
               onChangeText={setFirstName}
             />
             <Input
               style={styles.input}
-              placeholder="Customer Last Name"
+              placeholder="Customer Last Name*"
               value={lastName}
               onChangeText={setLastName}
             />
             <Input
               style={styles.input}
-              placeholder="Customer Email"
+              placeholder="Customer Email*"
               value={email}
               onChangeText={setEmail}
             />
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Customer Mobile Number"
+              placeholder="Customer Mobile Number*"
               value={mobileNumber}
               onChangeText={setMobileNumber}
             />
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Post Code"
+              placeholder="Post Code*"
               value={postalCode}
-              onChangeText={setPostalCode}
+              onChangeText={text => {
+                setPostalCode(text);
+                if (text.length === 6) {
+                  fetchCityStateByPincode(text);
+                }
+              }}
             />
             <Input
               style={styles.input}
-              placeholder="City"
+              placeholder="City*"
               value={city}
               onChangeText={setCity}
             />
             <Input
               style={styles.input}
-              placeholder="State"
+              placeholder="State*"
               value={state}
               onChangeText={setState}
             />
             <Input
               style={styles.input}
-              placeholder="Customer Address"
+              placeholder="Customer Address*"
               value={address}
               onChangeText={setAddress}
             />
             <Input
               style={styles.input}
-              placeholder="Landmark"
+              placeholder="Landmark*"
               value={landmark}
               onChangeText={setLandmark}
             />
             <Text style={styles.MainTitle}>Product Details</Text>
-
             <Input
               style={styles.input}
-              placeholder="Product Name"
+              placeholder="Product Name*"
               value={productName}
               onChangeText={setProductName}
             />
             <Input
               style={styles.input}
-              placeholder="SKU"
+              placeholder="SKU*"
               value={sku}
               onChangeText={setSku}
             />
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Quantity"
+              placeholder="Quantity*"
               value={quantity}
               onChangeText={setQuantity}
             />
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Price (INR)"
+              placeholder="Price (INR)*"
               value={price}
               onChangeText={setPrice}
             />
-            <Input
-              keyboardType="numeric"
-              style={styles.input}
-              placeholder="Weight"
+
+            <Text style={styles.MainTitle}>Weight*</Text>
+            <DropDownPicker
+              open={weightOptionsOpen}
               value={weight}
-              onChangeText={setWeight}
+              items={weightOptions}
+              setOpen={setWeightOptionsOpen}
+              setValue={setWeight}
+              setItems={setWeightOptions}
+              placeholder="Select Weight"
+              style={{
+                marginBottom: weight === 'custom' ? 10 : 20,
+                width: windowWidth / 1.2,
+                marginHorizontal: 5,
+              }}
             />
+            {weight === 'custom' && (
+              <Input
+                keyboardType="numeric"
+                style={styles.input}
+                placeholder="Enter custom weight in kgs"
+                value={weightCustom}
+                onChangeText={setweightCustom}
+              />
+            )}
+
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Length"
+              placeholder="Length in CM (Eg 10)*"
               value={length}
               onChangeText={setLength}
             />
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Breadth"
+              placeholder="Breadth in CM (Eg 10)*"
               value={breadth}
               onChangeText={setBreadth}
             />
             <Input
               keyboardType="numeric"
               style={styles.input}
-              placeholder="Height"
+              placeholder="Height in CM (Eg 10)*"
               value={height}
               onChangeText={setHeight}
             />
-            <Input
-              style={styles.input}
-              placeholder="Payment Method"
+
+            <Text style={styles.MainTitle}>Payment Method*</Text>
+            <DropDownPicker
+              open={paymentOptionsOpen}
               value={paymentMethod}
-              onChangeText={setPaymentMethod}
+              items={paymentOptions}
+              setOpen={setPaymentOptionsOpen}
+              setValue={setPaymentMethod}
+              setItems={setPaymentOptions}
+              placeholder="Select Payment Method"
+              style={{
+                marginBottom: 20,
+                width: windowWidth / 1.2,
+                marginHorizontal: 5,
+              }}
             />
+
             <View style={{marginTop: 20, marginBottom: 40}}>
               <CustomButton title={'Create Order'} onPress={createOrderFunc} />
             </View>
@@ -333,12 +415,10 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     padding: 20,
-    // paddingBottom: 60,
   },
   input: {
     height: 50,
     borderColor: COLOR.gray,
-    // marginBottom: 12,
     borderRadius: 5,
   },
   MainTitle: {

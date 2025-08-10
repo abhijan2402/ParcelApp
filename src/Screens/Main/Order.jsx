@@ -7,15 +7,19 @@ import {
   TouchableOpacity,
   Image,
   ActivityIndicator,
+  Alert,
+  Linking,
+  Share,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import {windowHeight, windowWidth} from '../../Constants/Dimensions';
 import Header from '../../Components/FeedHeader';
 import {useApi} from '../../Backend/Apis';
 import {COLOR} from '../../Constants/Colors';
+import CustomButton from '../../Components/CustomButton';
 
 const Order = ({navigation}) => {
-  const {getRequest} = useApi();
+  const {getRequest, postRequest} = useApi();
 
   const printIcon = 'https://img.icons8.com/ios-filled/50/000000/print.png';
   const shareIcon = 'https://img.icons8.com/ios-filled/50/000000/share.png';
@@ -25,6 +29,7 @@ const Order = ({navigation}) => {
 
   const [orderList, setOrderList] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [printing, setPrinting] = useState(false); // for label generation
 
   const getOrderList = async () => {
     setLoading(true);
@@ -33,7 +38,7 @@ const Order = ({navigation}) => {
       console.log('Order List Response:', response?.data?.data);
 
       if (response?.success) {
-        setOrderList(response?.data?.data); // Adjust based on your actual API response
+        setOrderList(response?.data?.data);
       } else {
         Alert.alert('Error', response?.error || 'Failed to fetch orders');
       }
@@ -45,12 +50,50 @@ const Order = ({navigation}) => {
     }
   };
 
+  const generateLabel = async (orderId, type) => {
+    setPrinting(true);
+    try {
+      const response = await getRequest(
+        `/api/generate-label?order_id=${orderId}`,
+      );
+      console.log('Label Response:', response?.data?.pdf_url);
+
+      if (response?.success) {
+        const pdfUrl = response?.data?.pdf_url;
+
+        if (type === 'download') {
+          Linking.openURL(pdfUrl);
+        } else {
+          await Share.share({
+            message: `Please download the shipment Label: ${pdfUrl}`,
+            url: pdfUrl, // iOS uses this if available
+            title: 'Share Label PDF',
+          });
+        }
+      } else {
+        Alert.alert('Error', response?.message || 'Failed to generate label');
+      }
+    } catch (error) {
+      console.error('Label Generation Error:', error);
+      Alert.alert('Error', 'Failed to generate label. Please try again.');
+    } finally {
+      setPrinting(false);
+    }
+  };
+
   useEffect(() => {
     getOrderList();
   }, []);
+
   return (
     <View style={{flex: 1}}>
-      <Header showBack title={'Order List'} />
+      <Header
+        showBack
+        title={'Order List'}
+        onBackPress={() => {
+          navigation.goBack();
+        }}
+      />
       <LinearGradient colors={['#c8fcc0', '#e6fffc']} style={styles.LinearBox}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           {loading ? (
@@ -73,29 +116,52 @@ const Order = ({navigation}) => {
                   label="Pickup Location"
                   value={order.pickup_location || 'N/A'}
                 />
+                <InfoRow
+                  label="Customer Name"
+                  value={
+                    `${order.customer_first_name} ${order?.customer_last_name}` ||
+                    'N/A'
+                  }
+                />
+                <InfoRow
+                  label="Drop Location"
+                  value={order.customer_address || 'N/A'}
+                />
                 <InfoRow label="Order Status" value="Shipped" status />
-
+                <CustomButton
+                  title={'Ship Now'}
+                  onPress={() =>
+                    navigation.navigate('ShipNow', {orderList: order})
+                  }
+                />
                 <View style={styles.actionRow}>
                   <ActionButton
                     icon={printIcon}
-                    label="Print Label"
-                    onPress={() => {}}
+                    label={printing ? 'Printing...' : 'Print Label'}
+                    onPress={() => generateLabel(order.id, 'download')}
+                    disabled={printing}
                   />
                   <ActionButton
                     icon={shareIcon}
                     label="Share Label"
-                    onPress={() => {}}
+                    onPress={() => generateLabel(order.id, 'share')}
                   />
                   <ActionButton
                     icon={trackIcon}
                     label="Track Order"
-                    onPress={() => {}}
+                    onPress={() => {
+                      navigation.navigate('TrackByAwb', {
+                        AWB: '14344943092017',
+                      });
+                    }}
                   />
-                  <ActionButton
+                  {/* <ActionButton
                     icon={dispatch}
                     label="Ship now"
-                    onPress={() => {}}
-                  />
+                    onPress={() => {
+                      navigation.navigate('ShipNow', {orderList: order});
+                    }}
+                  /> */}
                   <ActionButton
                     icon={createIcon}
                     label="Create new"
@@ -126,18 +192,22 @@ const InfoRow = ({label, value, status}) => (
   </View>
 );
 
-const ActionButton = ({icon, label, onPress}) => (
-  <TouchableOpacity style={styles.actionButton} onPress={onPress}>
+const ActionButton = ({icon, label, onPress, disabled}) => (
+  <TouchableOpacity
+    style={[styles.actionButton, disabled && {opacity: 0.5}]}
+    onPress={onPress}
+    disabled={disabled}>
     <Image source={{uri: icon}} style={styles.actionIcon} />
     <Text style={styles.actionText}>{label}</Text>
   </TouchableOpacity>
 );
+
 export default Order;
 
 const styles = StyleSheet.create({
   LinearBox: {
     width: windowWidth,
-    height: windowHeight,
+    height: windowHeight / 1.2,
   },
   scrollContent: {
     padding: 16,
@@ -176,7 +246,6 @@ const styles = StyleSheet.create({
     color: '#1f8c1f',
     fontWeight: 'bold',
   },
-
   actionRow: {
     flexDirection: 'row',
     justifyContent: 'space-around',

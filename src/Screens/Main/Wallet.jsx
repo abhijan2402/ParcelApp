@@ -212,7 +212,7 @@ const Wallet = ({navigation}) => {
         title={'Wallet'}
       />
 
-      <View style={styles.walletBox}>
+      {/* <View style={styles.walletBox}>
         <Text style={styles.totalLabel}>Total Wallet Balance</Text>
         <Text style={styles.totalAmount}>₹{walletTotal}</Text>
 
@@ -231,7 +231,7 @@ const Wallet = ({navigation}) => {
             {isProcessing ? 'Processing...' : 'Add Money'}
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
 
       <FlatList
         contentContainerStyle={styles.list}

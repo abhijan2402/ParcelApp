@@ -16,7 +16,7 @@ import {AuthContext} from '../../Backend/AuthContent';
 
 const Profile = ({navigation}) => {
   const {user} = useContext(AuthContext);
-  const UserDetails = user?.userDetails;
+  const UserDetails = user?.userDetails || user;
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(UserDetails?.name);
   const [username, setUsername] = useState('johndoe123');

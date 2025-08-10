@@ -25,7 +25,15 @@ const ShippingCalculator = () => {
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const navigation = useNavigation();
-
+  const [weightCustom, setweightCustom] = useState(null);
+  const [weightOptionsOpen, setWeightOptionsOpen] = useState(false);
+  const [weightOptions, setWeightOptions] = useState([
+    {label: 'Upto 0.5kg', value: '0.5'},
+    {label: 'Upto 1kg', value: '1'},
+    {label: 'Upto 1.5kg', value: '1.5'},
+    {label: 'Upto 2kg', value: '2'},
+    {label: 'Custom Weight', value: 'custom'},
+  ]);
   const carriers = [
     {id: 'xpressbees', label: 'Xpressbees'},
     {id: 'ecom', label: 'Ecom Express'},
@@ -38,10 +46,10 @@ const ShippingCalculator = () => {
   ];
 
   const calculateCharges = async () => {
-    if (!selectedCarrier) {
-      Alert.alert('Please select carrier');
-      return;
-    }
+    // if (!selectedCarrier) {
+    //   Alert.alert('Please select carrier');
+    //   return;
+    // }
     if (
       !pickupPin ||
       !deliveryPin ||
@@ -54,6 +62,28 @@ const ShippingCalculator = () => {
     }
 
     try {
+      const md = 'S';
+      const ss = 'Delivered';
+      const d_pin = deliveryPin;
+      const o_pin = pickupPin;
+      const cgm = parseFloat(weight) * 1000;
+      const declared_value = parseFloat(declaredValue);
+      const pt = paymentMethod;
+
+      console.log('HII');
+      const resultData = {
+        carrier: selectedCarrier,
+        paymentMethod: paymentMethod,
+        declaredValue: declared_value,
+        weight: weight,
+        deliveryPin: deliveryPin,
+        pickupPin: pickupPin,
+        // charges: data[0],
+      };
+      console.log(resultData, 'DATATAT');
+      // return;
+      navigation.navigate('ShippingDetails', {resultData});
+      return;
       setLoading(true);
       if (selectedCarrier === 'delhivery') {
         const apiKey = 'c4093190ae6edab6fd33121e5c6ad56dcb67804e';
@@ -106,7 +136,13 @@ const ShippingCalculator = () => {
 
   return (
     <View style={styles.Container}>
-      <Header title={'Shipping Calculator'} showBack />
+      <Header
+        title={'Shipping Calculator'}
+        showBack
+        onBackPress={() => {
+          navigation.goBack();
+        }}
+      />
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.introContainer}>
           <Text style={styles.introText}>
@@ -115,7 +151,7 @@ const ShippingCalculator = () => {
         </View>
 
         {/* Horizontal Courier Selection */}
-        <ScrollView
+        {/* <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           style={styles.horizontalContainer}>
@@ -136,8 +172,30 @@ const ShippingCalculator = () => {
               </Text>
             </TouchableOpacity>
           ))}
-        </ScrollView>
-
+        </ScrollView> */}
+        <DropDownPicker
+          open={weightOptionsOpen}
+          value={weight}
+          items={weightOptions}
+          setOpen={setWeightOptionsOpen}
+          setValue={setWeight}
+          setItems={setWeightOptions}
+          placeholder="Select Weight"
+          style={{
+            marginBottom: weight === 'custom' ? 10 : 20,
+            width: windowWidth / 1.1888,
+            marginHorizontal: 10,
+          }}
+        />
+        {weight === 'custom' && (
+          <Input
+            keyboardType="numeric"
+            style={styles.input}
+            placeholder="Enter custom weight in kgs"
+            value={weightCustom}
+            onChangeText={setweightCustom}
+          />
+        )}
         <Input
           placeholder={'Pickup Area Pincode'}
           keyboardType="numeric"
@@ -156,12 +214,12 @@ const ShippingCalculator = () => {
           value={declaredValue}
           onChangeText={setDeclaredValue}
         />
-        <Input
+        {/* <Input
           placeholder={'Weight (In KG)'}
           keyboardType="numeric"
           value={weight}
           onChangeText={setWeight}
-        />
+        /> */}
 
         <Text style={styles.paymentLabel}>Payment Method</Text>
         <DropDownPicker

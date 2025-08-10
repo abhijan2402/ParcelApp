@@ -21,12 +21,14 @@ import {AuthContext} from '../../Backend/AuthContent';
 
 const Home = ({navigation}) => {
   const {user, token} = useContext(AuthContext);
+  console.log(user, 'USERRRRRRRRRRRR');
+
   const [modalVisible, setModalVisible] = useState(false);
   const [UserData, setUserData] = useState([]);
   const animationRef = useRef(null);
   const [loading, setloading] = useState(false);
   const [modalVisible1, setModalVisible1] = useState(false);
-  const UserDetails = user?.userDetails;
+  const UserDetails = user?.userDetails || user;
   const handleAccept = () => {
     setModalVisible1(false);
     alert('Terms Accepted!');
@@ -102,9 +104,11 @@ const Home = ({navigation}) => {
               alignItems: 'center',
               marginTop: 10,
             }}>
-            <View style={{marginLeft: 15}}>
+            <View style={{marginLeft: 15, width: windowWidth / 2}}>
               <Text style={{fontSize: 15, fontWeight: '400'}}>Hello,</Text>
-              <Text style={{fontSize: 40, fontWeight: '600'}}>
+              <Text
+                style={{fontSize: 40, fontWeight: '600', width: '100%'}}
+                numberOfLines={1}>
                 {UserDetails?.name}
               </Text>
             </View>

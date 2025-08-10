@@ -1,41 +1,51 @@
-import {StyleSheet, Text, View, FlatList} from 'react-native';
-import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import Header from '../../Components/FeedHeader';
 import {windowHeight} from '../../Constants/Dimensions';
 import {COLOR} from '../../Constants/Colors';
 import CustomButton from '../../Components/CustomButton';
-
-const mockTickets = [
-  {
-    id: '1',
-    title: 'Unable to login',
-    description: 'I cannot log in with my email and password.',
-    createdAt: '2025-05-10',
-    status: 'Open',
-  },
-  {
-    id: '2',
-    title: 'Payment not processed',
-    description: 'Paid for subscription but it’s not active.',
-    createdAt: '2025-05-08',
-    status: 'Pending',
-  },
-  {
-    id: '3',
-    title: 'App crashes',
-    description: 'The app crashes on the profile page.',
-    createdAt: '2025-05-05',
-    status: 'Resolved',
-  },
-];
+import {useApi} from '../../Backend/Apis';
+import {useIsFocused} from '@react-navigation/native';
 
 const HelpDesk = ({navigation}) => {
+  const {getRequest} = useApi();
+  const isFocus = useIsFocused();
+  const [tickets, setTickets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const fetchTickets = async () => {
+    setLoading(true);
+    const response = await getRequest('/api/help-desk-list');
+    if (response?.success) {
+      console.log(response.data, 'DATATTATAT');
+
+      setTickets(response.data?.data || []);
+    } else {
+      console.log('Error fetching help desk list:', response?.error);
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    if (isFocus) {
+      fetchTickets();
+    }
+  }, [isFocus]);
+
   const renderTicket = ({item}) => (
     <View style={styles.ticketCard}>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <View style={styles.metaRow}>
-        <Text style={styles.date}>Created: {item.createdAt}</Text>
+        <Text style={styles.date}>
+          Created: {item.created_at || item.createdAt}
+        </Text>
         <Text style={[styles.status, getStatusStyle(item.status)]}>
           {item.status}
         </Text>
@@ -44,7 +54,7 @@ const HelpDesk = ({navigation}) => {
   );
 
   const getStatusStyle = status => {
-    switch (status.toLowerCase()) {
+    switch (status?.toLowerCase()) {
       case 'open':
         return {color: 'green'};
       case 'pending':
@@ -58,13 +68,33 @@ const HelpDesk = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Header showBack title={'Help Desk'} />
-      <FlatList
-        data={mockTickets}
-        keyExtractor={item => item.id}
-        renderItem={renderTicket}
-        contentContainerStyle={styles.listContainer}
+      <Header
+        showBack
+        title={'Help Desk'}
+        onBackPress={() => {
+          navigation.goBack();
+        }}
       />
+
+      {loading ? (
+        <ActivityIndicator
+          size="large"
+          color={COLOR.primary}
+          style={{marginTop: 40}}
+        />
+      ) : tickets.length === 0 ? (
+        <Text style={{textAlign: 'center', marginTop: 40, color: '#666'}}>
+          No queries found.
+        </Text>
+      ) : (
+        <FlatList
+          data={tickets}
+          keyExtractor={item => item.id?.toString()}
+          renderItem={renderTicket}
+          contentContainerStyle={styles.listContainer}
+        />
+      )}
+
       <CustomButton
         onPress={() => {
           navigation.navigate('CreateQuery');
@@ -86,6 +116,7 @@ const styles = StyleSheet.create({
   },
   listContainer: {
     padding: 16,
+    paddingBottom: 100,
   },
   ticketCard: {
     backgroundColor: '#f5f5f5',

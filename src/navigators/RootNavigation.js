@@ -23,6 +23,7 @@ import ContactUs from '../Screens/Main/ContactUs';
 import Kyc from '../Screens/Main/Kyc';
 import WeightDiscrepency from '../Screens/Main/WeightDiscrepency';
 import ShippingDetails from '../Screens/Main/ShippingDetails';
+import ShipNow from '../Screens/Main/ShipNow';
 const Stack = createNativeStackNavigator();
 
 const RootNavigation = () => {
@@ -53,6 +54,7 @@ const RootNavigation = () => {
             <Stack.Screen name="Invoice" component={Invoice} />
             <Stack.Screen name="ShippingDetails" component={ShippingDetails} />
 
+            <Stack.Screen name="ShipNow" component={ShipNow} />
 
 
 

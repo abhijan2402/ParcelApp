@@ -1,4 +1,4 @@
-import React, {useContext, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   StyleSheet,
   Text,
@@ -17,6 +17,8 @@ import Input from '../../Components/Input';
 import {AuthContext} from '../../Backend/AuthContent';
 import {useApi} from '../../Backend/Apis';
 import {windowWidth} from '../../Constants/Dimensions';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import auth from '@react-native-firebase/auth';
 
 const {height} = Dimensions.get('window');
 
@@ -44,6 +46,68 @@ const Login = ({navigation}) => {
     formData.append('password', password);
 
     const response = await postRequest('/api/login', formData, true);
+    console.log(response, 'RESPPPP');
+
+    if (response?.success) {
+      const data = response?.data;
+      setToken(data?.token);
+      setUser(data?.data);
+      setloading(false);
+    } else {
+      console.log(response, 'RESPPPP');
+
+      setloading(false);
+      Alert.alert('Error', response.error || 'Login failed');
+      return null;
+    }
+  };
+  useEffect(() => {
+    GoogleSignin.configure({
+      webClientId:
+        '323504085763-n4m228lcfvinptlniphmsejt0r04jabo.apps.googleusercontent.com', // from Firebase project settings (OAuth 2.0 client ID)
+    });
+  }, []);
+
+  const signInWithGoogle = async () => {
+    try {
+      await GoogleSignin.signOut();
+      // await auth().signOut();
+      // Ensure device has Google Play Services
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+      console.log(userInfo?.data, 'USER');
+      loginViaGoogle(userInfo?.data);
+      return userInfo;
+    } catch (error) {
+      console.error('❌ Google Sign-In Error:', error);
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        console.warn('User cancelled the login');
+      } else if (error.code === statusCodes.IN_PROGRESS) {
+        console.warn('Sign in is in progress already');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        console.warn('Play Services not available or outdated');
+      } else {
+        console.warn('Some other error:', error);
+      }
+      return null;
+    }
+  };
+
+  const loginViaGoogle = async user => {
+    // setloading(true);
+    const data = {
+      provider: 'google',
+      data: {
+        id: user?.user?.id,
+        name: user?.user?.name,
+        first_name: user?.user?.name,
+        last_name: user?.user?.name,
+        email: user?.user?.email,
+        phone_number: '',
+      },
+    };
+    console.log(data, 'USERRRR');
+    const response = await postRequest('/api/social-login', data);
     console.log(response, 'RESPPPP');
 
     if (response?.success) {
@@ -160,7 +224,7 @@ const Login = ({navigation}) => {
 
             <TouchableOpacity
               style={styles.googleButton}
-              onPress={() => Alert.alert('Google Login pressed')}>
+              onPress={() => signInWithGoogle()}>
               <Image
                 source={{
                   uri: 'https://cdn-icons-png.flaticon.com/128/300/300221.png',
@@ -203,7 +267,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     marginHorizontal: 30,
-    marginBottom: 20,
+    marginBottom: 100,
   },
   googleIcon: {
     width: 24,

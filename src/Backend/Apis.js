@@ -1,19 +1,19 @@
 // src/hooks/useApi.js
-import {useContext} from 'react';
-import {AuthContext} from './AuthContent';
+import { useContext } from 'react';
+import { AuthContext } from './AuthContent';
 
 const BASE_URL = 'https://dearexpress.com/public';
 
 export const useApi = () => {
-  const {token} = useContext(AuthContext);
-  
+  const { token } = useContext(AuthContext);
+
 
   const postRequest = async (endpoint, data = {}, isMultipart = false) => {
     // Set headers depending on request type
     const headers = {
       Accept: 'application/json',
       Authorization: `Bearer ${token}`,
-      ...(isMultipart ? {} : {'Content-Type': 'application/json'}),
+      ...(isMultipart ? {} : { 'Content-Type': 'application/json' }),
     };
 
     console.log(`${BASE_URL}${endpoint}`, data, 'DATATT');
@@ -47,7 +47,7 @@ export const useApi = () => {
       }
 
       // Return parsed JSON data on success
-      return {success: true, data: json, msg: json?.msg, token: json?.token};
+      return { success: true, data: json, msg: json?.msg, token: json?.token };
     } catch (error) {
       console.log('Network or fetch error:', error);
       return {
@@ -63,7 +63,7 @@ export const useApi = () => {
     const headers = {
       Accept: 'application/json',
       'Content-Type': 'application/json',
-      ...(token && {Authorization: `Bearer ${token}`}),
+      ...(token && { Authorization: `Bearer ${token}` }),
     };
 
     try {
@@ -91,7 +91,7 @@ export const useApi = () => {
         };
       }
 
-      return {success: true, data: json, msg: json?.msg};
+      return { success: true, data: json, msg: json?.msg };
     } catch (error) {
       console.log('Network or fetch error:', error);
       return {
@@ -101,5 +101,5 @@ export const useApi = () => {
     }
   };
 
-  return {getRequest, postRequest};
+  return { getRequest, postRequest };
 };

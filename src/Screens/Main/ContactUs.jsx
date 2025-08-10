@@ -18,7 +18,7 @@ import {AuthContext} from '../../Backend/AuthContent';
 const ContactUs = ({navigation}) => {
   const {postRequest} = useApi();
   const {user} = useContext(AuthContext);
-  const UserDetails = user?.userDetails;
+  const UserDetails = user?.userDetails || user;
   // Form States
   const [name, setName] = useState(UserDetails?.name);
   const [email, setEmail] = useState(UserDetails?.email);
