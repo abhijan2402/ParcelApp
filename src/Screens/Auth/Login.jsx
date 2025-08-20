@@ -112,6 +112,9 @@ const Login = ({navigation}) => {
 
     if (response?.success) {
       const data = response?.data;
+      console.log(data?.token, 'TOK');
+      console.log(data?.data, 'USER DATA');
+
       setToken(data?.token);
       setUser(data?.data);
       setloading(false);

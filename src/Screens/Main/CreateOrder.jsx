@@ -93,8 +93,8 @@ const CreateOrder = ({navigation}) => {
       return Alert.alert('Validation Error', 'Valid quantity is required');
     if (!price.trim() || isNaN(price) || Number(price) <= 0)
       return Alert.alert('Validation Error', 'Valid price is required');
-    if (!weight.trim() || isNaN(weight) || Number(weight) <= 0)
-      return Alert.alert('Validation Error', 'Valid weight is required');
+    // if (!weight.trim() || isNaN(weight) || Number(weight) <= 0)
+    //   return Alert.alert('Validation Error', 'Valid weight is required');
     if (!length.trim() || isNaN(length) || Number(length) <= 0)
       return Alert.alert('Validation Error', 'Valid length is required');
     if (!breadth.trim() || isNaN(breadth) || Number(breadth) <= 0)
@@ -119,7 +119,7 @@ const CreateOrder = ({navigation}) => {
     formData.append('sku', sku);
     formData.append('qty', quantity);
     formData.append('price', price);
-    formData.append('weight', weight);
+    formData.append('weight', weight == 'custom' ? weightCustom : weight);
     formData.append('length', length);
     formData.append('breadth', breadth);
     formData.append('height', height);
@@ -131,8 +131,13 @@ const CreateOrder = ({navigation}) => {
       console.log(response, 'RESPPPP');
 
       if (response?.success) {
-        Alert.alert('Success', 'Order created successfully');
-        navigation.goBack();
+        if (response?.data?.status == 'error') {
+          Alert.alert('Error', response?.data?.msg || 'Order creation failed');
+          return;
+        } else {
+          Alert.alert('Success', 'Order created successfully');
+          navigation.goBack();
+        }
       } else {
         Alert.alert('Error', response?.error || 'Something went wrong!');
       }

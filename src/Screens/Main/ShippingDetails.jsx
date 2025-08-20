@@ -27,14 +27,15 @@ const ShippingDetails = ({route, navigation}) => {
 
   const calculateDelhiveryCharges = async () => {
     try {
-      const apiKey = 'c4093190ae6edab6fd33121e5c6ad56dcb67804e';
+      const apiKey = '8e89607060ad233ad1f5ec2408aa69c026187808';
       const md = 'S';
       const ss = 'Delivered';
       const cgm = parseFloat(weight) * 1000;
       const declared_value = parseFloat(declaredValue);
       const pt = paymentMethod;
 
-      const url = `https://track.delhivery.com/api/kinko/v1/invoice/charges/.json?md=${md}&ss=${ss}&d_pin=${deliveryPin}&o_pin=${pickupPin}&cgm=${cgm}&declared_value=${declared_value}&pt=${pt}`;
+      // https://staging-express.delhivery.com/api/cmu/create.json
+      const url = `https://staging-express.delhivery.com/api/kinko/v1/invoice/charges/.json?md=${md}&ss=${ss}&d_pin=${deliveryPin}&o_pin=${pickupPin}&cgm=${cgm}&declared_value=${declared_value}&pt=${pt}`;
       console.log(url, 'URLLLLL');
 
       const response = await fetch(url, {
@@ -55,7 +56,7 @@ const ShippingDetails = ({route, navigation}) => {
       }
     } catch (error) {
       console.error('Error fetching Delhivery charges:', error);
-      Alert.alert('Error fetching Delhivery charges');
+      // Alert.alert('Error fetching Delhivery charges');
     }
   };
 

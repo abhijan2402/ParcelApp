@@ -10,6 +10,8 @@ export const useApi = () => {
 
   const postRequest = async (endpoint, data = {}, isMultipart = false) => {
     // Set headers depending on request type
+    console.log(token, 'TOKENNNN');
+
     const headers = {
       Accept: 'application/json',
       Authorization: `Bearer ${token}`,

@@ -11,11 +11,13 @@ import Header from '../../Components/FeedHeader';
 import {COLOR} from '../../Constants/Colors';
 import {windowWidth} from '../../Constants/Dimensions';
 import {useIsFocused} from '@react-navigation/native';
+import {useApi} from '../../Backend/Apis';
 
 const ShipNow = ({navigation, route}) => {
   const orderList = route?.params?.orderList;
   const isFocus = useIsFocused();
   console.log(orderList, 'ORDERLISISII');
+  const {postRequest} = useApi();
 
   const [shippingCharge, setShippingCharge] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -105,10 +107,15 @@ const ShipNow = ({navigation, route}) => {
 
       // const collectableAmount = Math.min(orderAmount, orderAmount); // collect full amount unless logic differs
       console.log(collectableAmount, orderAmount, 'ANOOOO');
-      const isCOD = orderList?.payment_method?.toLowerCase() === 'cod';
+      const isCOD = orderList?.payment_method?.toLowerCase() == 'cod';
 
       // Final amount after discount (if any)
       const totalPayable = orderAmount + shippingCharge + codCharge - discount;
+      console.log(
+        totalPayable,
+        'TOTALLALL',
+        orderAmount + shippingCharge + codCharge,
+      );
 
       // Only collect if it's a COD order
       const collectableAmount = isCOD ? totalPayable : 0;
@@ -179,11 +186,12 @@ const ShipNow = ({navigation, route}) => {
       );
 
       const result = await response?.json();
-      console.log(result, 'RESULTTTTT');
+      console.log(result?.data, 'RESULTTTTT');
 
       if (response.ok) {
-        Alert.alert('Order created successfully');
-        navigation.goBack();
+        handleSubmit(result?.data);
+        // Alert.alert('Order created successfully');
+        // navigation.goBack();
       } else {
         console.log(result);
         Alert.alert(result?.message);
@@ -203,6 +211,29 @@ const ShipNow = ({navigation, route}) => {
     }
   }, [isFocus]);
 
+  const handleSubmit = async dataValue => {
+    const formData = new FormData();
+    formData.append('partner_name', 'Xpressbees');
+    formData.append('amount', orderList?.price);
+    formData.append('awb_number', dataValue?.awb_number); // fixing overwritten key
+    formData.append('order_id', orderList?.id);
+    console.log('Submitting:', data);
+
+    const response = await postRequest(
+      '/api/update-order-details',
+      formData,
+      true,
+    );
+    console.log(response, 'RESPPP_OF__SAVE');
+
+    if (response?.success) {
+      Alert.alert('Order created successfully');
+      navigation.goBack();
+    } else {
+      console.log(response, 'Submission Error');
+      Alert.alert('Error', response?.error || 'Submission failed');
+    }
+  };
   return (
     <View style={styles.container}>
       <Header

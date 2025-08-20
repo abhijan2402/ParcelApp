@@ -75,7 +75,7 @@ const ShippingCalculator = () => {
         carrier: selectedCarrier,
         paymentMethod: paymentMethod,
         declaredValue: declared_value,
-        weight: weight,
+        weight: weight == 'custom' ? weightCustom : weight,
         deliveryPin: deliveryPin,
         pickupPin: pickupPin,
         // charges: data[0],
