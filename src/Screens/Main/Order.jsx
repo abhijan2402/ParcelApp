@@ -127,13 +127,18 @@ const Order = ({navigation}) => {
                   label="Drop Location"
                   value={order.customer_address || 'N/A'}
                 />
-                <InfoRow label="Order Status" value="Shipped" status />
+                <InfoRow
+                  label="Order Status"
+                  value={order?.order_status}
+                  status
+                />
                 <CustomButton
                   title={'Ship Now'}
                   onPress={() =>
                     navigation.navigate('ShipNow', {orderList: order})
                   }
                 />
+                {/* {order?.order_status != 'pending' && ( */}
                 <View style={styles.actionRow}>
                   <ActionButton
                     icon={printIcon}
@@ -170,6 +175,7 @@ const Order = ({navigation}) => {
                     }}
                   />
                 </View>
+                {/* )} */}
               </LinearGradient>
             ))
           ) : (
@@ -188,7 +194,14 @@ const Order = ({navigation}) => {
 const InfoRow = ({label, value, status}) => (
   <View style={styles.infoRow}>
     <Text style={styles.label}>{label}</Text>
-    <Text style={[styles.value, status && styles.statusValue]}>{value}</Text>
+    <Text
+      style={[
+        styles.value,
+        status && styles.statusValue,
+        {textTransform: 'capitalize'},
+      ]}>
+      {value}
+    </Text>{' '}
   </View>
 );
 
