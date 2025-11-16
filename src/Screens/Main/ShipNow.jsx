@@ -212,6 +212,10 @@ const ShipNow = ({navigation, route}) => {
   }, [isFocus]);
 
   const handleSubmit = async dataValue => {
+
+
+
+    console.log("J-HI")
     const formData = new FormData();
     formData.append('partner_name', 'Xpressbees');
     formData.append('amount', orderList?.price);
